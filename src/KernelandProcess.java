@@ -1,18 +1,18 @@
 public class KernelandProcess {
-    public static int PID;
-    private static int nextPID = 1;
+    public int PID;
+    private static int nextPID;
     private boolean started;
     private Thread thread;
 
     public KernelandProcess(UserlandProcess up) {
         thread = new Thread();
-        PID = nextPID;
-        nextPID++;
+        PID = 1;
+        nextPID = PID + 1;
     }
 
     public void stop() {
         if(started) {
-            started = false;
+            thread.interrupt(); //???
         }
     }
 
@@ -21,7 +21,7 @@ public class KernelandProcess {
     }
 
     public void run() {
-        // resume()/start()
+        thread.start();
         started = true;
     }
 }

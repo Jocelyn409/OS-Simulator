@@ -17,14 +17,15 @@ public class Scheduler {
         timer.schedule(timerTask, 0, 250);
     }
 
-    public void checkRunningProcesses() {
+    public boolean checkRunningProcesses() {
         for(int i = 0; i < processLinkedList.size(); i++) {
             if(processLinkedList.get(i).isDone()) {
                 processLinkedList.add(processLinkedList.remove(i));
                 processLinkedList.get(i).run();
-                return;
+                return true;
             }
         }
+        return false;
     }
 
     public int createProcess(UserlandProcess up) {
@@ -34,7 +35,7 @@ public class Scheduler {
         if(processLinkedList.getFirst().equals(newProcess)) {
             switchProcess();
         }
-        return KernelandProcess.PID; // does this actually work? or just return a new int thing
+        return newProcess.PID; // does this actually work? or just return a new int thing
     }
 
     public void switchProcess() {

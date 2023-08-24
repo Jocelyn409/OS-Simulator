@@ -1,4 +1,4 @@
-public class UserlandProcess implements Runnable {
+public abstract class UserlandProcess implements Runnable {
     @Override
     public void run() {
 
