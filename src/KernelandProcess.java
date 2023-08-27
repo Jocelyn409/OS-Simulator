@@ -1,4 +1,4 @@
-//@SuppressWarnings("all")
+@SuppressWarnings("all")
 public class KernelandProcess {
     public int PID;
     private static int nextPID;
@@ -6,14 +6,14 @@ public class KernelandProcess {
     private Thread thread;
 
     public KernelandProcess(UserlandProcess up, int PID) {
-        thread = new Thread("Thread" + up);
+        thread = new Thread(up);
         this.PID = PID;
         nextPID = PID + 1;
     }
 
     public void stop() {
         if(started) {
-            //thread.suspend();
+            thread.suspend();
         }
     }
 
@@ -22,7 +22,12 @@ public class KernelandProcess {
     }
 
     public void run() {
-        thread.start();
-        started = true;
+        if(started) {
+            thread.resume();
+        }
+        else {
+            thread.start();
+            started = true;
+        }
     }
 }
