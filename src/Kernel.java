@@ -3,9 +3,9 @@ public class Kernel {
         scheduler = new Scheduler();
     }
 
-    private static Scheduler scheduler;
+    private Scheduler scheduler;
 
-    public static int createProcess(UserlandProcess up) {
+    public int createProcess(UserlandProcess up) {
         return scheduler.createProcess(up);
     }
 }
