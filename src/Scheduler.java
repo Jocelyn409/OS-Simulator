@@ -4,9 +4,9 @@ import java.util.TimerTask;
 
 public class Scheduler {
     private LinkedList<KernelandProcess> processLinkedList = new LinkedList<>();
+    private KernelandProcess runningProcess = null;
     private Timer timer;
     private TimerTask timerTask;
-    private KernelandProcess runningKernelandProcess = null;
     private int PID = 0;
 
     public Scheduler() {
@@ -22,26 +22,30 @@ public class Scheduler {
         }
     }
 
+    // Create and add new process to LL; if there is no running process, call switchProcess().
     public int createProcess(UserlandProcess up) {
-        KernelandProcess newProcess = new KernelandProcess(up, ++PID);
+        KernelandProcess newProcess = new KernelandProcess(up, PID++);
         processLinkedList.add(newProcess);
-        if(runningKernelandProcess == null) {
+        if(runningProcess == null) {
             switchProcess();
         }
         return PID;
     }
 
+    // Stop running process if there is one; add it to the end of the LL
+    // if it hasn't finished, then run first process in LL.
     public void switchProcess() {
-        if(runningKernelandProcess != null) {
+        if(runningProcess != null) {
             // If there is a running process, stop it.
-            runningKernelandProcess.stop();
-            int index = processLinkedList.indexOf(runningKernelandProcess); // Index of running process.
+            runningProcess.stop();
+            int index = processLinkedList.indexOf(runningProcess); // Get index of the stopped process.
             if(!(processLinkedList.get(index).isDone())) {
-                // If running process is not done, add it to end of the LL.
+                // If the process did not finish, add it to end of the LL.
                 processLinkedList.add(processLinkedList.remove(index));
             }
+            runningProcess = null; // Make runningProcess null as it was stopped.
         }
-        processLinkedList.get(0).run(); // put exception here?
-        runningKernelandProcess = processLinkedList.get(0);
+        processLinkedList.get(0).run(); // Run first process in LL.
+        runningProcess = processLinkedList.get(0);
     }
 }
