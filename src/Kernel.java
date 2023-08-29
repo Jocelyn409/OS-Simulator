@@ -5,6 +5,10 @@ public class Kernel {
 
     private Scheduler scheduler;
 
+    public void sleep(int milliseconds) {
+        scheduler.sleep(milliseconds);
+    }
+
     public int createProcess(UserlandProcess up) {
         return scheduler.createProcess(up);
     }

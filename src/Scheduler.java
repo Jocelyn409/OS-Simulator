@@ -1,13 +1,16 @@
 import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.time.Clock;
 
 public class Scheduler {
     private LinkedList<KernelandProcess> processLinkedList = new LinkedList<>();
+    private LinkedList<KernelandProcess> sleepingProcesses = new LinkedList<>();
     private KernelandProcess runningProcess = null;
     private Timer timer;
     private TimerTask timerTask;
     private int PID = 0;
+    private Clock clock;
 
     public Scheduler() {
         timer = new Timer();
@@ -20,6 +23,30 @@ public class Scheduler {
         public void run() {
             switchProcess();
         }
+    }
+
+    private void moveToSleepQueue(int PID) {
+        for(int index = 0; index < processLinkedList.size(); index++) {
+            if(processLinkedList.get(index).PID == PID) {
+                sleepingProcesses.add(processLinkedList.remove(index));
+                return;
+            }
+        }
+    }
+
+    public void sleep(int milliseconds) {
+        // add milliseconds to clock.millis().
+        // wherever we wake up the process, make sure that the above is <= a new millis().
+
+        sleepingProcesses.add(
+                processLinkedList.remove(
+                        processLinkedList.indexOf(runningProcess)));
+
+        KernelandProcess temp = runningProcess;
+        runningProcess = null;
+        temp.stop();
+
+        switchProcess();
     }
 
     // Create and add new process to LL; if there is no running process, call switchProcess().
