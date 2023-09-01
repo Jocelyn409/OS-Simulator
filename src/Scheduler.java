@@ -4,7 +4,10 @@ import java.util.TimerTask;
 import java.time.Clock;
 
 public class Scheduler {
-    private LinkedList<KernelandProcess> processLinkedList = new LinkedList<>();
+    private LinkedList<KernelandProcess>[] priorityArray;
+    private LinkedList<KernelandProcess> realTimeProcesses;
+    private LinkedList<KernelandProcess> interactiveProcesses;
+    private LinkedList<KernelandProcess> backgroundProcesses;
     private LinkedList<KernelandProcess> sleepingProcesses = new LinkedList<>();
     private KernelandProcess runningProcess = null;
     private Timer timer;
@@ -13,6 +16,10 @@ public class Scheduler {
     private Clock clock;
 
     public Scheduler() {
+        priorityArray = new LinkedList[3];
+        priorityArray[0] = realTimeProcesses = new LinkedList<>();
+        priorityArray[1] = interactiveProcesses = new LinkedList<>();
+        priorityArray[2] = backgroundProcesses = new LinkedList<>();
         timer = new Timer();
         timerTask = new Interrupt();
         timer.schedule(timerTask, 250, 250);
@@ -25,23 +32,30 @@ public class Scheduler {
         }
     }
 
-    private void moveToSleepQueue(int PID) {
-        for(int index = 0; index < processLinkedList.size(); index++) {
-            if(processLinkedList.get(index).PID == PID) {
-                sleepingProcesses.add(processLinkedList.remove(index));
-                return;
+    private void awakenProcesses() {
+        // wherever we wake up the process, make sure that the above is <= a new millis() ! ! !
+        for(int arrayIndex = 0; arrayIndex <= 2; arrayIndex++) {
+            for(int listIndex = 0; listIndex < _; listIndex++) {
+
             }
         }
     }
 
     public void sleep(int milliseconds) {
-        // add milliseconds to clock.millis().
-        // wherever we wake up the process, make sure that the above is <= a new millis().
+        // Process will sleep until the current time plus the added time.
+        runningProcess.setSleepUntil(clock.millis() + milliseconds);
 
-        sleepingProcesses.add(
-                processLinkedList.remove(
-                        processLinkedList.indexOf(runningProcess)));
+        // Find and remove process from its list, then add it to the sleeping process list.
+        switch(runningProcess.getLevel()) {
+            case RealTime ->    sleepingProcesses.add(
+                    realTimeProcesses.remove(realTimeProcesses.indexOf(runningProcess)));
+            case Interactive -> sleepingProcesses.add(
+                    interactiveProcesses.remove(interactiveProcesses.indexOf(runningProcess)));
+            case Background ->  sleepingProcesses.add(
+                    backgroundProcesses.remove(backgroundProcesses.indexOf(runningProcess)));
+        }
 
+        // Stop process
         KernelandProcess temp = runningProcess;
         runningProcess = null;
         temp.stop();
@@ -50,9 +64,15 @@ public class Scheduler {
     }
 
     // Create and add new process to LL; if there is no running process, call switchProcess().
-    public int createProcess(UserlandProcess up) {
-        KernelandProcess newProcess = new KernelandProcess(up, PID++);
-        processLinkedList.add(newProcess);
+    public int createProcess(UserlandProcess up, Priority.Level level) {
+        KernelandProcess newProcess = new KernelandProcess(up, PID++, level);
+
+        // Add process to correct list.
+        switch(newProcess.getLevel()) {
+            case RealTime -> realTimeProcesses.add(newProcess);
+            case Interactive -> interactiveProcesses.add(newProcess);
+            case Background -> backgroundProcesses.add(newProcess);
+        }
         if(runningProcess == null) {
             switchProcess();
         }

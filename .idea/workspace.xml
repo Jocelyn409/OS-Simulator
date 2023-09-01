@@ -5,10 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="25881d44-c1a1-424a-907f-c4c6a345470a" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/Priority.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Kernel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Kernel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OS Simulator/Kernel.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OS Simulator/Kernel.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OS Simulator/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OS Simulator/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OS Simulator/OS.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OS Simulator/OS.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OS Simulator/Scheduler$Interrupt.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OS Simulator/Scheduler$Interrupt.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OS Simulator/Scheduler.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OS Simulator/Scheduler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/KernelandProcess.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/KernelandProcess.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/OS.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/OS.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Scheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Scheduler.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -84,6 +89,8 @@
       <workItem from="1693178404816" duration="4077000" />
       <workItem from="1693267598872" duration="4847000" />
       <workItem from="1693277962323" duration="2190000" />
+      <workItem from="1693530804179" duration="1275000" />
+      <workItem from="1693539901909" duration="2536000" />
     </task>
     <servers />
   </component>

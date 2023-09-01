@@ -2,13 +2,16 @@
 public class KernelandProcess {
     private Thread thread;
     private boolean started;
-    public int PID;
+    private int PID;
     private static int nextPID;
+    private long sleepUntil;
+    private Priority.Level level;
 
-    public KernelandProcess(UserlandProcess up, int PID) {
+    public KernelandProcess(UserlandProcess up, int PID, Priority.Level level) {
         thread = new Thread(up);
         this.PID = PID;
         nextPID = PID + 1;
+        this.level = level;
     }
 
     // Suspend thread only if thread has already started.
@@ -32,5 +35,29 @@ public class KernelandProcess {
             thread.start();
             started = true;
         }
+    }
+
+    public int getPID() {
+        return PID;
+    }
+
+    public void setPID(int PID) {
+        this.PID = PID;
+    }
+
+    public long getSleepUntil() {
+        return sleepUntil;
+    }
+
+    public void setSleepUntil(long sleepUntil) {
+        this.sleepUntil = sleepUntil;
+    }
+
+    public void setLevel(Priority.Level level) {
+        this.level = level;
+    }
+
+    public Priority.Level getLevel() {
+        return level;
     }
 }
