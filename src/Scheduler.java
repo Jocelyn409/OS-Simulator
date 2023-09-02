@@ -4,7 +4,7 @@ import java.util.TimerTask;
 import java.time.Clock;
 
 public class Scheduler {
-    private LinkedList<KernelandProcess>[] priorityArray;
+    private LinkedList<KernelandProcess>[] processListsArray;
     private LinkedList<KernelandProcess> realTimeProcesses;
     private LinkedList<KernelandProcess> interactiveProcesses;
     private LinkedList<KernelandProcess> backgroundProcesses;
@@ -16,10 +16,10 @@ public class Scheduler {
     private Clock clock;
 
     public Scheduler() {
-        priorityArray = new LinkedList[3];
-        priorityArray[0] = realTimeProcesses = new LinkedList<>();
-        priorityArray[1] = interactiveProcesses = new LinkedList<>();
-        priorityArray[2] = backgroundProcesses = new LinkedList<>();
+        processListsArray = new LinkedList[3];
+        processListsArray[0] = realTimeProcesses = new LinkedList<>();
+        processListsArray[1] = interactiveProcesses = new LinkedList<>();
+        processListsArray[2] = backgroundProcesses = new LinkedList<>();
         timer = new Timer();
         timerTask = new Interrupt();
         timer.schedule(timerTask, 250, 250);
@@ -32,13 +32,14 @@ public class Scheduler {
         }
     }
 
-    private void awakenProcesses() {
+    private boolean awakenProcesses() {
         // wherever we wake up the process, make sure that the above is <= a new millis() ! ! !
         for(int arrayIndex = 0; arrayIndex <= 2; arrayIndex++) {
-            for(int listIndex = 0; listIndex < _; listIndex++) {
-
+            if(processListsArray[arrayIndex].indexOf(runningProcess) > 0) {
+                return true;
             }
         }
+        return false;
     }
 
     public void sleep(int milliseconds) {
@@ -86,6 +87,9 @@ public class Scheduler {
             // If there is a running process, stop it.
             runningProcess.stop();
             int index = processLinkedList.indexOf(runningProcess); // Get index of the stopped process.
+
+            awakenProcesses();
+
             if(!(processLinkedList.get(index).isDone())) {
                 // If the process did not finish, add it to end of the LL.
                 processLinkedList.add(processLinkedList.remove(index));
