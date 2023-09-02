@@ -2,6 +2,7 @@ import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.time.Clock;
+import java.util.Random;
 
 public class Scheduler {
     private LinkedList<KernelandProcess>[] processListsArray;
@@ -58,6 +59,48 @@ public class Scheduler {
         }
     }
 
+    // this is dumb. just add more if statements to decidePriority()
+    private int checkPriority() {
+        int result = decidePriority();
+        while(processListsArray[result].size() < 1) {
+            result = decidePriority();
+        }
+        return result;
+    }
+
+    // Return values:
+    // 0 = Realtime, 1 = Interactive, 2 = Background.
+    private int decidePriority() {
+        Random random = new Random();
+        if(processListsArray[0].size() > 0) {
+            switch(random.nextInt(10)) {
+                case 0, 1, 2, 3, 4, 5 -> {
+                    return 0;
+                }
+                case 6, 7, 8 -> {
+                    return 1;
+                }
+                case 9 -> {
+                    return 2;
+                }
+            }
+        }
+        else if(processListsArray[1].size() > 0) { // If there are no realtime processes.
+            switch(random.nextInt(4)) {
+                case 0, 1, 2 -> {
+                    return 1;
+                }
+                case 3 -> {
+                    return 2;
+                }
+            }
+        }
+        else if(processListsArray[2].size() > 0) {
+            return 2; // Only background processes.
+        }
+        return -1;
+    }
+
     public void sleep(int milliseconds) {
         // Process will sleep until the current time plus the added time.
         runningProcess.setSleepUntil(clock.millis() + milliseconds);
@@ -92,6 +135,17 @@ public class Scheduler {
         return PID;
     }
 
+    public int createProcess(UserlandProcess up) {
+        KernelandProcess newProcess = new KernelandProcess(up, PID++, Priority.Level.Interactive);
+
+        // Add process to correct list.
+        addProcess(newProcess);
+        if(runningProcess == null) {
+            switchProcess();
+        }
+        return PID;
+    }
+
     // Stop running process if there is one; add it to the end of the LL
     // if it hasn't finished, then run first process in LL.
     private void switchProcess() {
@@ -106,9 +160,8 @@ public class Scheduler {
             runningProcess = null; // Make runningProcess null as it was stopped.
         }
         awakenProcesses();
-
-        // we need random # stuff
-        //processLinkedList.get(0).run(); // Run first process in LL.
-        //runningProcess = processLinkedList.get(0);
+        int priority = checkPriority();
+        processListsArray[priority].get(0).run();
+        runningProcess = processListsArray[priority].get(0);
     }
 }

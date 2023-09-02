@@ -9,6 +9,10 @@ public class Kernel {
         scheduler.sleep(milliseconds);
     }
 
+    public int createProcess(UserlandProcess up, Priority.Level level) {
+        return scheduler.createProcess(up, level);
+    }
+
     public int createProcess(UserlandProcess up) {
         return scheduler.createProcess(up);
     }

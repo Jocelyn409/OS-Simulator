@@ -10,6 +10,10 @@ public class OS {
         kernelInstance.createProcess(init);
     }
 
+    public static int createProcess(UserlandProcess up, Priority.Level level) {
+        return kernelInstance.createProcess(up, level);
+    }
+
     public static int createProcess(UserlandProcess up) {
         return kernelInstance.createProcess(up);
     }
