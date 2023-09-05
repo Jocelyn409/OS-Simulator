@@ -22,7 +22,8 @@ public class Scheduler {
         }
     }
 
-    // Create and add new process to LL; if there is no running process, call switchProcess().
+    // Create and add new process to LL; if there is no running process,
+    // call switchProcess() to run the new process.
     public int createProcess(UserlandProcess up) {
         KernelandProcess newProcess = new KernelandProcess(up, PID++);
         processLinkedList.add(newProcess);
@@ -39,11 +40,11 @@ public class Scheduler {
             // If there is a running process, stop it.
             runningProcess.stop();
             int index = processLinkedList.indexOf(runningProcess); // Get index of the stopped process.
+            runningProcess = null; // Make runningProcess null as it was stopped.
             if(!(processLinkedList.get(index).isDone())) {
                 // If the process did not finish, add it to end of the LL.
                 processLinkedList.add(processLinkedList.remove(index));
             }
-            runningProcess = null; // Make runningProcess null as it was stopped.
         }
         processLinkedList.get(0).run(); // Run first process in LL.
         runningProcess = processLinkedList.get(0);
