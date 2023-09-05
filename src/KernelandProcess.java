@@ -26,7 +26,7 @@ public class KernelandProcess {
         return started && !(thread.isAlive());
     }
 
-    // Resume thread if already started, otherwise start it.
+    // Resume thread if already started; otherwise start it.
     public void run() {
         if(started) {
             thread.resume();
