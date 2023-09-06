@@ -6,12 +6,15 @@ public class KernelandProcess {
     private static int nextPID;
     private long sleepUntil;
     private Priority.Level level;
+    private boolean ranUntilTimeout;
+    private int runsToTimeout;
 
     public KernelandProcess(UserlandProcess up, int PID, Priority.Level level) {
         thread = new Thread(up);
         this.PID = PID;
         nextPID = PID + 1;
         this.level = level;
+        runsToTimeout = 0;
     }
 
     // Suspend thread only if thread has already started.
