@@ -1,15 +1,18 @@
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.time.Clock;
 import java.util.Random;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class Scheduler {
-    private LinkedList<KernelandProcess>[] processListsArray;
-    private LinkedList<KernelandProcess> realTimeProcesses;
-    private LinkedList<KernelandProcess> interactiveProcesses;
-    private LinkedList<KernelandProcess> backgroundProcesses;
-    private LinkedList<KernelandProcess> sleepingProcesses = new LinkedList<>();
+    private List<KernelandProcess>[] processListsArray;
+    private List<KernelandProcess> realTimeProcesses;
+    private List<KernelandProcess> interactiveProcesses;
+    private List<KernelandProcess> backgroundProcesses;
+    private List<KernelandProcess> sleepingProcesses;
     private KernelandProcess runningProcess = null;
     private Timer timer;
     private TimerTask timerTask;
@@ -17,10 +20,11 @@ public class Scheduler {
     private Clock clock;
 
     public Scheduler() {
-        processListsArray = new LinkedList[3];
-        processListsArray[0] = realTimeProcesses = new LinkedList<>();
-        processListsArray[1] = interactiveProcesses = new LinkedList<>();
-        processListsArray[2] = backgroundProcesses = new LinkedList<>();
+        processListsArray = new List[3];
+        processListsArray[0] = realTimeProcesses = Collections.synchronizedList(new ArrayList<>());
+        processListsArray[1] = interactiveProcesses = Collections.synchronizedList(new ArrayList<>());
+        processListsArray[2] = backgroundProcesses = Collections.synchronizedList(new ArrayList<>());
+        sleepingProcesses = new LinkedList<>();
         timer = new Timer();
         timerTask = new Interrupt();
         timer.schedule(timerTask, 250, 250);
