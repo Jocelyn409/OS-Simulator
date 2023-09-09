@@ -3,7 +3,7 @@ public class Kernel {
         scheduler = new Scheduler();
     }
 
-    private Scheduler scheduler;
+    private final Scheduler scheduler;
 
     public int createProcess(UserlandProcess up) {
         return scheduler.createProcess(up);

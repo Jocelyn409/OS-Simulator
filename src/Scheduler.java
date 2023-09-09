@@ -40,14 +40,15 @@ public class Scheduler {
             // If there is a running process, stop it.
             runningProcess.stop();
             int index = processLinkedList.indexOf(runningProcess); // Get index of the stopped process.
-            KernelandProcess removedProcess = processLinkedList.remove(index); // Remove process from LL since it was stopped.
             runningProcess = null; // Make runningProcess null as it was stopped.
-            if(!(processLinkedList.get(index).isDone())) {
+            KernelandProcess removedProcess = processLinkedList.remove(index); // Remove process from LL since it was stopped.
+            if(!(removedProcess.isDone())) {
                 // If the process did not finish, add it back to the end of the LL.
                 processLinkedList.add(removedProcess);
             }
         }
-        processLinkedList.get(0).run(); // Run first process in LL.
+        // Run first process in LL and assign runningProcess to it.
+        processLinkedList.get(0).run();
         runningProcess = processLinkedList.get(0);
     }
 }
