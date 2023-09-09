@@ -1,18 +1,22 @@
 public class OS {
-    private static Kernel kernelInstance;
+    private static Kernel kernelInstance = null;
 
     public static void sleep(int milliseconds) {
         kernelInstance.sleep(milliseconds);
     }
 
     public static void startup(UserlandProcess init, Priority.Level level) {
-        kernelInstance = new Kernel();
-        kernelInstance.createProcess(init, level);
+        if(kernelInstance == null) {
+            kernelInstance = new Kernel();
+            kernelInstance.createProcess(init, level);
+        }
+        else {
+            throw new RuntimeException("Startup already initiated.");
+        }
     }
 
     public static void startup(UserlandProcess init) {
-        kernelInstance = new Kernel();
-        kernelInstance.createProcess(init);
+        startup(init, Priority.Level.Interactive);
     }
 
     public static int createProcess(UserlandProcess up) {
