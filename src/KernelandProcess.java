@@ -13,6 +13,7 @@ public class KernelandProcess {
         thread = new Thread(up);
         this.PID = PID;
         nextPID = PID + 1;
+        started = false;
         this.level = level;
         runsToTimeout = 0;
     }
