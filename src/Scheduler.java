@@ -13,7 +13,7 @@ public class Scheduler {
     private List<KernelandProcess> interactiveProcesses;
     private List<KernelandProcess> backgroundProcesses;
     private List<KernelandProcess> sleepingProcesses;
-    private KernelandProcess runningProcess = null;
+    private KernelandProcess runningProcess;
     private Timer timer;
     private TimerTask timerTask;
     private int PID = 0;
@@ -25,9 +25,11 @@ public class Scheduler {
         processListsArray[1] = interactiveProcesses = Collections.synchronizedList(new ArrayList<>());
         processListsArray[2] = backgroundProcesses = Collections.synchronizedList(new ArrayList<>());
         sleepingProcesses = new LinkedList<>();
+        runningProcess = null;
         timer = new Timer();
         timerTask = new Interrupt();
         timer.schedule(timerTask, 250, 250);
+        clock = Clock.systemUTC();
     }
 
     private class Interrupt extends TimerTask {
@@ -46,41 +48,16 @@ public class Scheduler {
     // Puts all processes that should be awakened on the correct queue.
     private void awakenProcesses() {
         for(int i = 0; i < sleepingProcesses.size(); i++) {
-            if(sleepingProcesses.get(i).getSleepUntil() >= clock.millis()) {
+            if(sleepingProcesses.get(i).getSleepUntil() < clock.millis()) {
                 addProcess(sleepingProcesses.remove(i));
             }
         }
     }
 
-    // Gets a process's level and adds it to the appropriate list.
-    private void addProcess(KernelandProcess process) {
-        switch(process.getLevel()) {
-            case RealTime -> realTimeProcesses.add(process);
-            case Interactive -> interactiveProcesses.add(process);
-            case Background -> backgroundProcesses.add(process);
-        }
-    }
-
-    // Searches each priority list and trys to find the running process in order to remove it.
-    private void removeRunningProcess() {
-        int runningProcessIndex;
-        for(int arrayIndex = 0; arrayIndex <= 2; arrayIndex++) {
-            runningProcessIndex = processListsArray[arrayIndex].indexOf(runningProcess);
-            if(runningProcessIndex >= 0) {
-                // If index is >= 0, process is in list and is then removed.
-                processListsArray[arrayIndex].remove(runningProcessIndex);
-                return;
-            }
-        }
-        throw new RuntimeException("Running process removal was attempted but process was not found.");
-    }
-
-    // this is dumb. just add more if statements to decidePriority()..?
-    // need to check if this works. maybe can still use.
     private int checkPriority() {
         int result = decidePriority();
-        while(processListsArray[result].size() < 1) {
-            result = decidePriority();
+        if(processListsArray[result].size() < 1) {
+            result = checkPriority();
         }
         return result;
     }
@@ -115,6 +92,29 @@ public class Scheduler {
             return 2; // Only background processes.
         }
         return -1;
+    }
+
+    // Gets a process's level and adds it to the appropriate list.
+    private void addProcess(KernelandProcess process) {
+        switch(process.getLevel()) {
+            case RealTime -> realTimeProcesses.add(process);
+            case Interactive -> interactiveProcesses.add(process);
+            case Background -> backgroundProcesses.add(process);
+        }
+    }
+
+    // Searches each priority list and trys to find the running process in order to remove it.
+    private void removeRunningProcess() {
+        int runningProcessIndex;
+        for(int arrayIndex = 0; arrayIndex <= 2; arrayIndex++) {
+            runningProcessIndex = processListsArray[arrayIndex].indexOf(runningProcess);
+            if(runningProcessIndex >= 0) {
+                // If index is >= 0, process is in list and is then removed.
+                processListsArray[arrayIndex].remove(runningProcessIndex);
+                return;
+            }
+        }
+        throw new RuntimeException("Running process removal was attempted but process was not found.");
     }
 
     // Sleep the currently running process.
@@ -173,7 +173,7 @@ public class Scheduler {
         awakenProcesses(); // Awaken any processes that need to be before a new process is run.
 
         int priority = checkPriority();
-        processListsArray[priority].get(0).run();
         runningProcess = processListsArray[priority].get(0);
+        runningProcess.run();
     }
 }
