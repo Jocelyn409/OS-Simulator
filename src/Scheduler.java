@@ -40,7 +40,7 @@ public class Scheduler {
     }
 
     private void checkProcessDemotion() {
-        // if ran to time out,
+        // if ran to time out, (if the task completed...? idfk)
         // check if its ran to timeout 5 times
         // if it has, demote it.
     }
@@ -54,44 +54,53 @@ public class Scheduler {
         }
     }
 
-    private int checkPriority() {
-        int result = decidePriority();
-        if(processListsArray[result].size() < 1) {
-            result = checkPriority();
+    private int checkEmptyLists() {
+        int listCounter = 0;
+        if(!processListsArray[0].isEmpty()) {
+            listCounter += 1;
         }
-        return result;
+        if(!processListsArray[1].isEmpty()) {
+            listCounter += 2;
+        }
+        if(!processListsArray[2].isEmpty()) {
+            listCounter += 4;
+        }
+        return listCounter;
     }
 
-    // Return values: 0 = Realtime, 1 = Interactive, 2 = Background.
     private int decidePriority() {
         Random random = new Random();
-        if(processListsArray[0].size() > 0) {
-            switch(random.nextInt(10)) {
-                case 0, 1, 2, 3, 4, 5 -> {
-                    return 0;
+        int listCounter = checkEmptyLists();
+        switch(listCounter) {
+            // One list isn't empty.
+            case 1: return 0;
+            case 2: return 1;
+            case 4: return 2;
+            // Two lists aren't empty.
+            case 3: // Real-time and interactive aren't empty.
+                switch(random.nextInt(5)) {
+                    case 0, 1, 2 -> {return 0;}
+                    case 3, 4 -> {return 1;}
                 }
-                case 6, 7, 8 -> {
-                    return 1;
+            case 5: // Real-time and background aren't empty.
+                switch(random.nextInt(10)) {
+                    case 0, 1, 2, 3, 4, 5, 6, 7, 8 -> {return 0;}
+                    case 9 -> {return 2;}
                 }
-                case 9 -> {
-                    return 2;
+            case 6: // Interactive and background aren't empty.
+                switch(random.nextInt(4)) {
+                    case 0, 1, 2 -> {return 1;}
+                    case 3 -> {return 2;}
                 }
-            }
+            // No lists are empty.
+            case 7:
+                switch(random.nextInt(10)) {
+                    case 0, 1, 2, 3, 4, 5 -> {return 0;}
+                    case 6, 7, 8 -> {return 1;}
+                    case 9 -> {return 2;}
+                }
         }
-        else if(processListsArray[1].size() > 0) { // If there are no realtime processes.
-            switch(random.nextInt(4)) {
-                case 0, 1, 2 -> {
-                    return 1;
-                }
-                case 3 -> {
-                    return 2;
-                }
-            }
-        }
-        else if(processListsArray[2].size() > 0) {
-            return 2; // Only background processes.
-        }
-        return -1;
+        return 100;
     }
 
     // Gets a process's level and adds it to the appropriate list.
@@ -124,14 +133,13 @@ public class Scheduler {
 
         // Find and remove process from its list, then add it to the sleeping process list.
         switch(runningProcess.getLevel()) {
-            case RealTime ->    sleepingProcesses.add(
+            case RealTime       -> sleepingProcesses.add(
                     realTimeProcesses.remove(realTimeProcesses.indexOf(runningProcess)));
-            case Interactive -> sleepingProcesses.add(
+            case Interactive    -> sleepingProcesses.add(
                     interactiveProcesses.remove(interactiveProcesses.indexOf(runningProcess)));
-            case Background ->  sleepingProcesses.add(
+            case Background     -> sleepingProcesses.add(
                     backgroundProcesses.remove(backgroundProcesses.indexOf(runningProcess)));
         }
-
         // Stop the process.
         KernelandProcess temp = runningProcess;
         runningProcess = null;
@@ -171,9 +179,10 @@ public class Scheduler {
             runningProcess = null; // Make runningProcess null since it was stopped.
         }
         awakenProcesses(); // Awaken any processes that need to be before a new process is run.
-
-        int priority = checkPriority();
-        runningProcess = processListsArray[priority].get(0);
-        runningProcess.run();
+        int priority = decidePriority();
+        try {
+            runningProcess = processListsArray[priority].get(0);
+            runningProcess.run();
+        } catch(Exception ignored) {}
     }
 }
