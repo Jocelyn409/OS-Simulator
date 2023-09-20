@@ -165,10 +165,11 @@ public class Scheduler {
         if(runningProcess != null) {
             // If there is a running process, stop it.
             var temp = runningProcess;
-            runningProcess = null; // Make runningProcess null since it was stopped.
+            runningProcess = null;
             temp.stop();
 
-            removeRunningProcess();
+            // Remove process from list
+            removeRunningProcess(); // THIS USES RUNNINGPROCESS BUT ITS NULL NOW
             //checkProcessDemotion();
             if(!(temp.isDone())) {
                 // If the process did not finish, add it to end of the correct LL.
