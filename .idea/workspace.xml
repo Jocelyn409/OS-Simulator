@@ -7,8 +7,8 @@
     <list default="true" id="25881d44-c1a1-424a-907f-c4c6a345470a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/OS Simulator/HelloWorld.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OS Simulator/HelloWorld.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OS Simulator/Scheduler$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OS Simulator/Scheduler$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/OS Simulator/Scheduler.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OS Simulator/Scheduler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/GoodbyeWorld.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GoodbyeWorld.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/HelloWorld.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/HelloWorld.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Scheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Scheduler.java" afterDir="false" />
     </list>
@@ -96,6 +96,7 @@
       <workItem from="1694545707904" duration="7735000" />
       <workItem from="1694750392279" duration="1326000" />
       <workItem from="1695064093629" duration="2226000" />
+      <workItem from="1695184659760" duration="7937000" />
     </task>
     <servers />
   </component>

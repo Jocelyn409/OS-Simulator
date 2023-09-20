@@ -3,9 +3,7 @@ public class HelloWorld extends UserlandProcess {
     public void run() {
         while(true) {
             System.out.println("Hello World");
-            try {
-                OS.sleep(2000);
-            } catch(Exception ignored) { }
+            OS.sleep(2000);
         }
     }
 }

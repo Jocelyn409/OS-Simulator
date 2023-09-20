@@ -1,4 +1,3 @@
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -24,7 +23,7 @@ public class Scheduler {
         processListsArray[0] = realTimeProcesses = Collections.synchronizedList(new ArrayList<>());
         processListsArray[1] = interactiveProcesses = Collections.synchronizedList(new ArrayList<>());
         processListsArray[2] = backgroundProcesses = Collections.synchronizedList(new ArrayList<>());
-        sleepingProcesses = new LinkedList<>();
+        sleepingProcesses = Collections.synchronizedList(new ArrayList<>());
         runningProcess = null;
         timer = new Timer();
         timerTask = new Interrupt();
@@ -48,7 +47,7 @@ public class Scheduler {
     // Puts all processes that should be awakened on the correct queue.
     private void awakenProcesses() {
         for(int i = 0; i < sleepingProcesses.size(); i++) {
-            if(sleepingProcesses.get(i).getSleepUntil() < clock.millis()) {
+            if(sleepingProcesses.get(i).getSleepUntil() <= clock.millis()) {
                 addProcess(sleepingProcesses.remove(i));
             }
         }
@@ -79,36 +78,37 @@ public class Scheduler {
             // Two lists aren't empty.
             case 3: // Real-time and interactive aren't empty.
                 switch(random.nextInt(5)) {
-                    case 0, 1, 2 -> {return 0;}
-                    case 3, 4 -> {return 1;}
+                    case 0, 1, 2 -> { return 0; }
+                    case 3, 4 -> { return 1; }
                 }
             case 5: // Real-time and background aren't empty.
                 switch(random.nextInt(10)) {
-                    case 0, 1, 2, 3, 4, 5, 6, 7, 8 -> {return 0;}
-                    case 9 -> {return 2;}
+                    case 0, 1, 2, 3, 4, 5, 6, 7, 8 -> { return 0; }
+                    case 9 -> { return 2; }
                 }
             case 6: // Interactive and background aren't empty.
                 switch(random.nextInt(4)) {
-                    case 0, 1, 2 -> {return 1;}
-                    case 3 -> {return 2;}
+                    case 0, 1, 2 -> { return 1; }
+                    case 3 -> { return 2; }
                 }
             // No lists are empty.
             case 7:
                 switch(random.nextInt(10)) {
-                    case 0, 1, 2, 3, 4, 5 -> {return 0;}
-                    case 6, 7, 8 -> {return 1;}
-                    case 9 -> {return 2;}
+                    case 0, 1, 2, 3, 4, 5 -> { return 0; }
+                    case 6, 7, 8 -> { return 1; }
+                    case 9 -> { return 2; }
                 }
+            default:
+                return -1;
         }
-        return 100;
     }
 
     // Gets a process's level and adds it to the appropriate list.
     private void addProcess(KernelandProcess process) {
         switch(process.getLevel()) {
-            case RealTime -> realTimeProcesses.add(process);
-            case Interactive -> interactiveProcesses.add(process);
-            case Background -> backgroundProcesses.add(process);
+            case RealTime       -> realTimeProcesses.add(process);
+            case Interactive    -> interactiveProcesses.add(process);
+            case Background     -> backgroundProcesses.add(process);
         }
     }
 
@@ -140,11 +140,6 @@ public class Scheduler {
             case Background     -> sleepingProcesses.add(
                     backgroundProcesses.remove(backgroundProcesses.indexOf(runningProcess)));
         }
-        // Stop the process.
-        KernelandProcess temp = runningProcess;
-        runningProcess = null;
-        temp.stop();
-
         switchProcess();
     }
 
@@ -169,20 +164,24 @@ public class Scheduler {
     private void switchProcess() {
         if(runningProcess != null) {
             // If there is a running process, stop it.
-            runningProcess.stop();
-            removeRunningProcess();
-            checkProcessDemotion();
-            if(!(runningProcess.isDone())) {
-                // If the process did not finish, add it to end of the correct LL.
-                addProcess(runningProcess);
-            }
+            var temp = runningProcess;
             runningProcess = null; // Make runningProcess null since it was stopped.
+            temp.stop();
+
+            removeRunningProcess();
+            //checkProcessDemotion();
+            if(!(temp.isDone())) {
+                // If the process did not finish, add it to end of the correct LL.
+                addProcess(temp);
+            }
         }
         awakenProcesses(); // Awaken any processes that need to be before a new process is run.
-        int priority = decidePriority();
-        try {
+        int priority;
+        if((priority = decidePriority()) != -1) {
+            // Only run a process if there exists at least one that isn't asleep.
             runningProcess = processListsArray[priority].get(0);
             runningProcess.run();
-        } catch(Exception ignored) {}
+        }
     }
+
 }
