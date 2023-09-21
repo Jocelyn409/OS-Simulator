@@ -168,11 +168,10 @@ public class Scheduler {
             runningProcess = null;
             temp.stop();
 
-            // Remove process from list
-            removeRunningProcess(); // THIS USES RUNNINGPROCESS BUT ITS NULL NOW
+            removeRunningProcess(); // Remove process from list // THIS USES RUNNINGPROCESS BUT ITS NULL NOW
             //checkProcessDemotion();
             if(!(temp.isDone())) {
-                // If the process did not finish, add it to end of the correct LL.
+                // If the process did not finish, add it to end of the correct priority LL.
                 addProcess(temp);
             }
         }
