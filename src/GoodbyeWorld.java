@@ -3,7 +3,7 @@ public class GoodbyeWorld extends UserlandProcess {
     public void run() {
         while(true) {
             System.out.println("Goodbye World");
-            OS.sleep(500);
+            OS.sleep(1000);
         }
     }
 }

@@ -39,9 +39,12 @@ public class Scheduler {
     }
 
     private void checkProcessDemotion() {
-        // if ran to time out, (if the task completed...? idfk)
-        // check if its ran to timeout 5 times
-        // if it has, demote it.
+        if(runningProcess.getRunsToTimeout() == 5) {
+            switch(runningProcess.getLevel()) {
+                case RealTime -> runningProcess.setLevel(Priority.Level.Interactive);
+                case Interactive -> runningProcess.setLevel(Priority.Level.Background);
+            }
+        }
     }
 
     // Puts all processes that should be awakened on the correct queue.
@@ -130,9 +133,12 @@ public class Scheduler {
     public void sleep(int milliseconds) {
         // Process sleepUntil time will be the current time plus the added time.
         runningProcess.setSleepUntil(clock.millis() + milliseconds);
+        runningProcess.resetRunsToTimeout();
 
-        // Find and remove process from its list, then add it to the sleeping process list.
+        // Stop and remove runningProcess.
+        var temp = runningProcess;
         switch(runningProcess.getLevel()) {
+            // Find and remove process from its list, then add it to the sleeping process list.
             case RealTime       -> sleepingProcesses.add(
                     realTimeProcesses.remove(realTimeProcesses.indexOf(runningProcess)));
             case Interactive    -> sleepingProcesses.add(
@@ -140,6 +146,9 @@ public class Scheduler {
             case Background     -> sleepingProcesses.add(
                     backgroundProcesses.remove(backgroundProcesses.indexOf(runningProcess)));
         }
+        runningProcess = null;
+        temp.stop();
+
         switchProcess();
     }
 
@@ -163,17 +172,17 @@ public class Scheduler {
     // if it hasn't finished, then run first process in LL.
     private void switchProcess() {
         if(runningProcess != null) {
-            // If there is a running process, stop it.
+            // If there is a running process, stop it and remove it.
             var temp = runningProcess;
-            runningProcess = null;
-            temp.stop();
-
-            removeRunningProcess(); // Remove process from list // THIS USES RUNNINGPROCESS BUT ITS NULL NOW
-            //checkProcessDemotion();
+            removeRunningProcess();
             if(!(temp.isDone())) {
-                // If the process did not finish, add it to end of the correct priority LL.
+                // If the process did not finish, add it back to the end of the LL.
                 addProcess(temp);
             }
+            runningProcess.incrementRunsToTimeout(); // where to put???
+            checkProcessDemotion();
+            runningProcess = null;
+            temp.stop();
         }
         awakenProcesses(); // Awaken any processes that need to be before a new process is run.
         int priority;
@@ -183,5 +192,4 @@ public class Scheduler {
             runningProcess.run();
         }
     }
-
 }

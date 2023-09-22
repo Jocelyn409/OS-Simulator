@@ -6,7 +6,6 @@ public class KernelandProcess {
     private static int nextPID;
     private long sleepUntil;
     private Priority.Level level;
-    private boolean ranUntilTimeout;
     private int runsToTimeout;
 
     public KernelandProcess(UserlandProcess up, int PID, Priority.Level level) {
@@ -57,11 +56,23 @@ public class KernelandProcess {
         this.sleepUntil = sleepUntil;
     }
 
+    public Priority.Level getLevel() {
+        return level;
+    }
+
     public void setLevel(Priority.Level level) {
         this.level = level;
     }
 
-    public Priority.Level getLevel() {
-        return level;
+    public int getRunsToTimeout() {
+        return runsToTimeout;
+    }
+
+    public void resetRunsToTimeout() {
+        runsToTimeout = 0;
+    }
+
+    public void incrementRunsToTimeout() {
+        runsToTimeout++;
     }
 }
