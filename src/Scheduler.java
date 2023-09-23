@@ -38,15 +38,6 @@ public class Scheduler {
         }
     }
 
-    private void checkProcessDemotion() {
-        if(runningProcess.getRunsToTimeout() == 5) {
-            switch(runningProcess.getLevel()) {
-                case RealTime -> runningProcess.setLevel(Priority.Level.Interactive);
-                case Interactive -> runningProcess.setLevel(Priority.Level.Background);
-            }
-        }
-    }
-
     // Puts all processes that should be awakened on the correct queue.
     private void awakenProcesses() {
         for(int i = 0; i < sleepingProcesses.size(); i++) {
@@ -179,8 +170,8 @@ public class Scheduler {
                 // If the process did not finish, add it back to the end of the LL.
                 addProcess(temp);
             }
-            runningProcess.incrementRunsToTimeout(); // where to put???
-            checkProcessDemotion();
+            runningProcess.incrementRunsToTimeout();
+            runningProcess.checkProcessDemotion();
             runningProcess = null;
             temp.stop();
         }

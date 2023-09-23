@@ -40,6 +40,24 @@ public class KernelandProcess {
         }
     }
 
+    public void checkProcessDemotion() {
+        if(runsToTimeout == 5 && (level != Priority.Level.Background)) {
+            switch (level) {
+                case RealTime -> level = Priority.Level.Interactive;
+                case Interactive -> level = Priority.Level.Background;
+            }
+            runsToTimeout = 0;
+        }
+    }
+
+    public void resetRunsToTimeout() {
+        runsToTimeout = 0;
+    }
+
+    public void incrementRunsToTimeout() {
+        runsToTimeout++;
+    }
+
     public int getPID() {
         return PID;
     }
@@ -66,13 +84,5 @@ public class KernelandProcess {
 
     public int getRunsToTimeout() {
         return runsToTimeout;
-    }
-
-    public void resetRunsToTimeout() {
-        runsToTimeout = 0;
-    }
-
-    public void incrementRunsToTimeout() {
-        runsToTimeout++;
     }
 }
