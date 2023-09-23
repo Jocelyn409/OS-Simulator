@@ -6,7 +6,7 @@ public class KernelandProcess {
     private static int nextPID;
     private long sleepUntil;
     private Priority.Level level;
-    private int runsToTimeout;
+    private int processTimeoutCount;
 
     public KernelandProcess(UserlandProcess up, int PID, Priority.Level level) {
         thread = new Thread(up);
@@ -14,7 +14,7 @@ public class KernelandProcess {
         nextPID = PID + 1;
         started = false;
         this.level = level;
-        runsToTimeout = 0;
+        processTimeoutCount = 0;
     }
 
     // Suspend thread only if thread has already started.
@@ -40,22 +40,25 @@ public class KernelandProcess {
         }
     }
 
+    // Check if the process needs to be demoted. processTimeoutCount is incremented,
+    // then if it's 5, demote the process, and reset the count.
     public void checkProcessDemotion() {
-        if(runsToTimeout == 5 && (level != Priority.Level.Background)) {
+        processTimeoutCount++;
+        if(processTimeoutCount == 5 && (level != Priority.Level.Background)) {
             switch (level) {
                 case RealTime -> level = Priority.Level.Interactive;
                 case Interactive -> level = Priority.Level.Background;
             }
-            runsToTimeout = 0;
+            processTimeoutCount = 0;
         }
     }
 
-    public void resetRunsToTimeout() {
-        runsToTimeout = 0;
+    public void resetProcessTimeoutCount() {
+        processTimeoutCount = 0;
     }
 
     public void incrementRunsToTimeout() {
-        runsToTimeout++;
+        processTimeoutCount++;
     }
 
     public int getPID() {
@@ -82,7 +85,7 @@ public class KernelandProcess {
         this.level = level;
     }
 
-    public int getRunsToTimeout() {
-        return runsToTimeout;
+    public int getProcessTimeoutCount() {
+        return processTimeoutCount;
     }
 }
