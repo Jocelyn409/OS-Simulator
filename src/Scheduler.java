@@ -5,6 +5,7 @@ import java.time.Clock;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.Semaphore;
 
 public class Scheduler {
     private List<List<KernelandProcess>> processListsArray;
@@ -17,6 +18,7 @@ public class Scheduler {
     private TimerTask timerTask;
     private int PID = 0;
     private Clock clock;
+    private Semaphore test;
 
     public Scheduler() {
         processListsArray = Collections.synchronizedList(new ArrayList<>());
@@ -29,6 +31,7 @@ public class Scheduler {
         timerTask = new Interrupt();
         timer.schedule(timerTask, 250, 250);
         clock = Clock.systemUTC();
+        test = new Semaphore(1, true);
     }
 
     private class Interrupt extends TimerTask {
@@ -38,54 +41,26 @@ public class Scheduler {
         }
     }
 
-    // Checks all priority lists to see if they are empty or not. Uses the return
-    // number in decidePriority(), which is added to if a list is not empty.
-    private int checkEmptyLists() {
-        int listCounter = 0;
-        if(!processListsArray.get(0).isEmpty()) {
-            listCounter += 1;
-        }
-        if(!processListsArray.get(1).isEmpty()) {
-            listCounter += 2;
-        }
-        if(!processListsArray.get(2).isEmpty()) {
-            listCounter += 4;
-        }
-        return listCounter;
-    }
-
     // Decides a priority at random based on which lists aren't empty by using checkEmptyLists().
     private int decidePriority() {
         Random random = new Random();
-        int listCounter = checkEmptyLists();
-        switch(listCounter) {
-            case 1: return 0; // Real-time is only list not empty.
-            case 2: return 1; // Interactive is only list not empty.
-            case 4: return 2; // Background is only list not empty.
-            case 3: // Real-time and interactive aren't empty.
-                switch(random.nextInt(5)) {
-                    case 0, 1, 2 -> { return 0; }
-                    case 3, 4 -> { return 1; }
-                }
-            case 5: // Real-time and background aren't empty.
-                switch(random.nextInt(10)) {
-                    case 0, 1, 2, 3, 4, 5, 6, 7, 8 -> { return 0; }
-                    case 9 -> { return 2; }
-                }
-            case 6: // Interactive and background aren't empty.
-                switch(random.nextInt(4)) {
-                    case 0, 1, 2 -> { return 1; }
-                    case 3 -> { return 2; }
-                }
-            case 7: // No lists are empty.
-                switch(random.nextInt(10)) {
-                    case 0, 1, 2, 3, 4, 5 -> { return 0; }
-                    case 6, 7, 8 -> { return 1; }
-                    case 9 -> { return 2; }
-                }
-            default:
-                return -1; // All lists are empty.
+        if(!realTimeProcesses.isEmpty()) {
+            switch(random.nextInt(10)) {
+                case 0, 1, 2, 3, 4, 5 -> { return 0; }
+                case 6, 7, 8 -> { if(interactiveProcesses.isEmpty()) return 0; return 1; }
+                case 9 -> { if(backgroundProcesses.isEmpty()) return 1; return 2; }
+            }
         }
+        else if(!interactiveProcesses.isEmpty()) {
+            switch(random.nextInt(4)) {
+                case 0, 1, 2 -> { return 1; }
+                case 3 -> { if(backgroundProcesses.isEmpty()) return 1; return 2;}
+            }
+        }
+        else if(!backgroundProcesses.isEmpty()) {
+            return 2;
+        }
+        return -1;
     }
 
     // Gets a process's level and adds it to the appropriate list.
@@ -124,6 +99,13 @@ public class Scheduler {
     // Sleeps the currently running process by removing it from
     // its current list and adding it to the sleepingProcesses list.
     synchronized public void sleep(int milliseconds) {
+        /*
+        try {
+            test.acquire();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }*/
+
         // Process sleepUntil time will be the current time plus the added time.
         runningProcess.setSleepUntil(clock.millis() + milliseconds);
         runningProcess.resetProcessTimeoutCount(); // Reset processTimeoutCount since the process is sleeping.
@@ -133,17 +115,18 @@ public class Scheduler {
             // Find and remove process from its list, then add it to the sleeping process list.
             case RealTime       -> sleepingProcesses.add(
                     realTimeProcesses.remove(realTimeProcesses.indexOf(runningProcess)));
-            case Interactive    -> sleepingProcesses.add(
+            case Interactive -> sleepingProcesses.add(
                     interactiveProcesses.remove(interactiveProcesses.indexOf(runningProcess)));
-            case Background     -> sleepingProcesses.add(
+            case Background -> sleepingProcesses.add(
                     backgroundProcesses.remove(backgroundProcesses.indexOf(runningProcess)));
         }
+        //System.out.println(runningProcess.getLevel());
 
         // Stop process.
         var temp = runningProcess;
         runningProcess = null;
         temp.stop();
-
+        //test.release();
         switchProcess(); // Switch process since we need a new process to run.
     }
 
@@ -167,22 +150,18 @@ public class Scheduler {
     // if it hasn't finished, then run first process in LL.
     private void switchProcess() {
         if(runningProcess != null) {
-            // If there is a running process, remove it.
+            runningProcess.stop();
             removeRunningProcess();
+            runningProcess.incrementRunsToTimeout();
+            runningProcess.checkProcessDemotion();
             if(!(runningProcess.isDone())) {
                 // If the process did not finish, add it back to the end of the LL.
                 addProcess(runningProcess);
             }
-            runningProcess.checkProcessDemotion(); // Check for demotion.
-
-            // Stop process.
-            var temp = runningProcess;
-            runningProcess = null;
-            temp.stop();
         }
         awakenProcesses(); // Awaken any processes that need to be before a new process is run.
         int priority;
-        if((priority = decidePriority()) != -1) {
+        if((priority = decidePriority()) != -1 && !(processListsArray.get(priority).isEmpty())) {
             // Only run a process if there exists at least one that isn't asleep.
             runningProcess = processListsArray.get(priority).get(0);
             runningProcess.run();
