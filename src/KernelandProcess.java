@@ -3,14 +3,14 @@ public class KernelandProcess {
     private Thread thread;
     private boolean started;
     private int PID;
-    private static int nextPID;
+    private static int nextPID = 0;
     private long sleepUntil;
     private Priority.Level level;
     private int processTimeoutCount;
 
-    public KernelandProcess(UserlandProcess up, int PID, Priority.Level level) {
+    public KernelandProcess(UserlandProcess up, Priority.Level level) {
         thread = new Thread(up);
-        this.PID = PID;
+        this.PID = nextPID;
         nextPID = PID + 1;
         started = false;
         this.level = level;
@@ -49,6 +49,7 @@ public class KernelandProcess {
                 case Interactive -> level = Priority.Level.Background;
             }
             processTimeoutCount = 0;
+            System.out.println("WE HAVE DEMOTED TO " +level+ " for PID: " + PID);
         }
     }
 
