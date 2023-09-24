@@ -16,6 +16,7 @@ public class Scheduler {
     private Timer timer;
     private TimerTask timerTask;
     private Clock clock;
+    private static final Object padLock = new Object();
 
     public Scheduler() {
         processListsArray = Collections.synchronizedList(new ArrayList<>());
@@ -83,20 +84,18 @@ public class Scheduler {
     // Sleeps the currently running process by removing it from
     // its current list and adding it to the sleepingProcesses list.
     public void sleep(int milliseconds) {
-        // Bandage solution to make code work if sleep is <= 250.
-        if(milliseconds <= 250) {
-            milliseconds += 250;
-        }
-
         // Process sleepUntil time will be the current time plus the added time.
-        var tempRunningProcess = runningProcess;
-        tempRunningProcess.setSleepUntil(clock.millis() + milliseconds);
-        tempRunningProcess.resetProcessTimeoutCount(); // Reset processTimeoutCount since the process is sleeping.
+        runningProcess.setSleepUntil(clock.millis() + milliseconds);
+        runningProcess.resetProcessTimeoutCount(); // Reset processTimeoutCount since the process is sleeping.
 
         // Add tempRunningProcess to sleepingProcess.
-        sleepingProcesses.add(tempRunningProcess);
+        sleepingProcesses.add(runningProcess);
+
+        var tempRunningProcess = runningProcess;
+        runningProcess = null;
 
         switchProcess(); // Switch process since we need a new process to run.
+        tempRunningProcess.stop();
     }
 
     // If createProcess() is called with no overload, call the overloaded method
@@ -118,21 +117,23 @@ public class Scheduler {
     // Stop running process if there is one; add it to the end of the LL
     // if it hasn't finished, then run first process in LL.
     private void switchProcess() {
-        var tempRunningProcess = runningProcess;
-        if(tempRunningProcess != null) {
-            runningProcess = null;
-            tempRunningProcess.stop();
-            if(!(tempRunningProcess.isDone())) {
-                // If the process did not finish, add it back to the end of the LL.
-                addProcess(tempRunningProcess);
+        synchronized(padLock) {
+            if(runningProcess != null) {
+                var tempRunningProcess = runningProcess;
+                runningProcess = null;
+                tempRunningProcess.stop();
+                if(!(runningProcess.isDone())) {
+                    // If the process did not finish, add it back to the end of the LL.
+                    addProcess(runningProcess);
+                }
             }
-        }
-        awakenProcesses(); // Awaken any processes that need to be before a new process is run.
-        int priority;
-        if((priority = decidePriority()) != -1 && !(processListsArray.get(priority).isEmpty())) {
-            // Only run a process if there exists at least one that isn't asleep.
-            runningProcess = processListsArray.get(priority).remove(0);
-            runningProcess.run();
+            awakenProcesses(); // Awaken any processes that need to be before a new process is run.
+            int priority;
+            if((priority = decidePriority()) != -1 && !(processListsArray.get(priority).isEmpty())) {
+                // Only run a process if there exists at least one that isn't asleep.
+                runningProcess = processListsArray.get(priority).remove(0);
+                runningProcess.run();
+            }
         }
     }
 }
