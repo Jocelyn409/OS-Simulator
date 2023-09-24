@@ -43,13 +43,14 @@ public class KernelandProcess {
     // Check if the process needs to be demoted. processTimeoutCount is incremented,
     // then if it's 5, demote the process, and reset the count.
     public void checkProcessDemotion() {
+        processTimeoutCount++;
         if(processTimeoutCount >= 5 && (level != Priority.Level.Background)) {
             switch(level) {
                 case RealTime -> level = Priority.Level.Interactive;
                 case Interactive -> level = Priority.Level.Background;
             }
             processTimeoutCount = 0;
-            System.out.println("WE HAVE DEMOTED TO " +level+ " for PID: " + PID);
+            System.out.println("WE HAVE DEMOTED TO " + level + " for PID: " + PID);
         }
     }
 

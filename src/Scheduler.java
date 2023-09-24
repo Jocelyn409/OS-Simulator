@@ -16,7 +16,7 @@ public class Scheduler {
     private Timer timer;
     private TimerTask timerTask;
     private Clock clock;
-    private static final Object padLock = new Object();
+    private Random random;
 
     public Scheduler() {
         processListsArray = Collections.synchronizedList(new ArrayList<>());
@@ -29,20 +29,21 @@ public class Scheduler {
         timerTask = new Interrupt();
         timer.schedule(timerTask, 250, 250);
         clock = Clock.systemUTC();
+        random = new Random();
     }
 
     private class Interrupt extends TimerTask {
         @Override
         public void run() {
+            if(runningProcess != null) {
+                runningProcess.checkProcessDemotion();
+            }
             switchProcess();
-            //runningProcess.incrementRunsToTimeout();
-            //runningProcess.checkProcessDemotion();
         }
     }
 
     // Decides a priority at random based on which lists aren't empty by using checkEmptyLists().
     private int decidePriority() {
-        Random random = new Random();
         if(!realTimeProcesses.isEmpty()) {
             switch(random.nextInt(10)) {
                 case 0, 1, 2, 3, 4, 5 -> { return 0; }
@@ -116,24 +117,17 @@ public class Scheduler {
 
     // Stop running process if there is one; add it to the end of the LL
     // if it hasn't finished, then run first process in LL.
-    private void switchProcess() {
-        synchronized(padLock) {
-            if(runningProcess != null) {
-                var tempRunningProcess = runningProcess;
-                runningProcess = null;
-                tempRunningProcess.stop();
-                if(!(runningProcess.isDone())) {
-                    // If the process did not finish, add it back to the end of the LL.
-                    addProcess(runningProcess);
-                }
-            }
-            awakenProcesses(); // Awaken any processes that need to be before a new process is run.
-            int priority;
-            if((priority = decidePriority()) != -1 && !(processListsArray.get(priority).isEmpty())) {
-                // Only run a process if there exists at least one that isn't asleep.
-                runningProcess = processListsArray.get(priority).remove(0);
-                runningProcess.run();
-            }
+    synchronized private void switchProcess() {
+        if(runningProcess != null && !(runningProcess.isDone())) {
+            // If runningProcess is not null and the process did not finish, add it back to the end of the LL.
+            addProcess(runningProcess);
+        }
+        awakenProcesses(); // Awaken any processes that need to be before a new process is run.
+        int priority;
+        if((priority = decidePriority()) != -1 && !(processListsArray.get(priority).isEmpty())) {
+            // Only run a process if there exists at least one that isn't asleep.
+            runningProcess = processListsArray.get(priority).remove(0);
+            runningProcess.run();
         }
     }
 }

@@ -1,4 +1,4 @@
-public class RealTimeProcess extends UserlandProcess {
+public class InteractiveProcess extends UserlandProcess {
     @Override
     public void run() {
         while(true) {
@@ -7,7 +7,7 @@ public class RealTimeProcess extends UserlandProcess {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            System.out.println("Real-Time Process");
+            System.out.println("Interactive Process");
         }
     }
 }
