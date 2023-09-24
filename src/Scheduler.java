@@ -18,7 +18,6 @@ public class Scheduler {
     private TimerTask timerTask;
     private int PID = 0;
     private Clock clock;
-    private Semaphore test;
 
     public Scheduler() {
         processListsArray = Collections.synchronizedList(new ArrayList<>());
@@ -31,13 +30,15 @@ public class Scheduler {
         timerTask = new Interrupt();
         timer.schedule(timerTask, 250, 250);
         clock = Clock.systemUTC();
-        test = new Semaphore(1, true);
     }
 
     private class Interrupt extends TimerTask {
         @Override
         public void run() {
+            awakenProcesses(); // Awaken any processes that need to be before a new process is run.
             switchProcess();
+            //runningProcess.incrementRunsToTimeout();
+            //runningProcess.checkProcessDemotion();
         }
     }
 
@@ -69,17 +70,14 @@ public class Scheduler {
             case RealTime       -> realTimeProcesses.add(process);
             case Interactive    -> interactiveProcesses.add(process);
             case Background     -> backgroundProcesses.add(process);
+
         }
     }
 
     // Searches each priority list and trys to find the running process in order to remove it.
-    private void removeRunningProcess() {
-        int runningProcessIndex;
+    private void removeRunningProcess(KernelandProcess process) {
         for(int arrayIndex = 0; arrayIndex <= 2; arrayIndex++) {
-            runningProcessIndex = processListsArray.get(arrayIndex).indexOf(runningProcess);
-            if(runningProcessIndex >= 0) {
-                // If index is >= 0, process is in list and is then removed.
-                processListsArray.get(arrayIndex).remove(runningProcessIndex);
+            if(processListsArray.get(arrayIndex).remove(process)) {
                 return;
             }
         }
@@ -98,14 +96,7 @@ public class Scheduler {
 
     // Sleeps the currently running process by removing it from
     // its current list and adding it to the sleepingProcesses list.
-    synchronized public void sleep(int milliseconds) {
-        /*
-        try {
-            test.acquire();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }*/
-
+    public void sleep(int milliseconds) {
         // Process sleepUntil time will be the current time plus the added time.
         runningProcess.setSleepUntil(clock.millis() + milliseconds);
         runningProcess.resetProcessTimeoutCount(); // Reset processTimeoutCount since the process is sleeping.
@@ -115,18 +106,12 @@ public class Scheduler {
             // Find and remove process from its list, then add it to the sleeping process list.
             case RealTime       -> sleepingProcesses.add(
                     realTimeProcesses.remove(realTimeProcesses.indexOf(runningProcess)));
-            case Interactive -> sleepingProcesses.add(
+            case Interactive    -> sleepingProcesses.add(
                     interactiveProcesses.remove(interactiveProcesses.indexOf(runningProcess)));
-            case Background -> sleepingProcesses.add(
+            case Background     -> sleepingProcesses.add(
                     backgroundProcesses.remove(backgroundProcesses.indexOf(runningProcess)));
         }
-        //System.out.println(runningProcess.getLevel());
 
-        // Stop process.
-        var temp = runningProcess;
-        runningProcess = null;
-        temp.stop();
-        //test.release();
         switchProcess(); // Switch process since we need a new process to run.
     }
 
@@ -140,6 +125,7 @@ public class Scheduler {
     public int createProcess(UserlandProcess up, Priority.Level level) {
         KernelandProcess newProcess = new KernelandProcess(up, PID++, level);
         addProcess(newProcess); // Add process to correct list.
+        //System.out.println("we added a process");
         if(runningProcess == null) {
             switchProcess();
         }
@@ -150,18 +136,17 @@ public class Scheduler {
     // if it hasn't finished, then run first process in LL.
     private void switchProcess() {
         if(runningProcess != null) {
-            runningProcess.stop();
-            removeRunningProcess();
-            runningProcess.incrementRunsToTimeout();
-            runningProcess.checkProcessDemotion();
-            if(!(runningProcess.isDone())) {
+            var tempRunningProcess = runningProcess;
+            runningProcess = null;
+            tempRunningProcess.stop();
+            removeRunningProcess(tempRunningProcess);
+            if(!(tempRunningProcess.isDone())) {
                 // If the process did not finish, add it back to the end of the LL.
-                addProcess(runningProcess);
+                addProcess(tempRunningProcess);
             }
         }
-        awakenProcesses(); // Awaken any processes that need to be before a new process is run.
         int priority;
-        if((priority = decidePriority()) != -1 && !(processListsArray.get(priority).isEmpty())) {
+        if((priority = decidePriority()) != -1) {
             // Only run a process if there exists at least one that isn't asleep.
             runningProcess = processListsArray.get(priority).get(0);
             runningProcess.run();
