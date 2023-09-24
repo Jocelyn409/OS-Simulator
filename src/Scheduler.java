@@ -5,6 +5,7 @@ import java.time.Clock;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Scheduler {
     private List<List<KernelandProcess>> processListsArray;
@@ -12,7 +13,7 @@ public class Scheduler {
     private List<KernelandProcess> interactiveProcesses;
     private List<KernelandProcess> backgroundProcesses;
     private List<KernelandProcess> sleepingProcesses;
-    private KernelandProcess runningProcess;
+    private AtomicReference<KernelandProcess> runningProcess;
     private Timer timer;
     private TimerTask timerTask;
     private Clock clock;
@@ -23,7 +24,7 @@ public class Scheduler {
         processListsArray.add(1, interactiveProcesses = Collections.synchronizedList(new ArrayList<>()));
         processListsArray.add(2, backgroundProcesses = Collections.synchronizedList(new ArrayList<>()));
         sleepingProcesses = Collections.synchronizedList(new ArrayList<>());
-        runningProcess = null;
+        runningProcess = new AtomicReference<>();
         timer = new Timer();
         timerTask = new Interrupt();
         timer.schedule(timerTask, 250, 250);
@@ -33,7 +34,6 @@ public class Scheduler {
     private class Interrupt extends TimerTask {
         @Override
         public void run() {
-            awakenProcesses(); // Awaken any processes that need to be before a new process is run.
             switchProcess();
             //runningProcess.incrementRunsToTimeout();
             //runningProcess.checkProcessDemotion();
@@ -86,12 +86,12 @@ public class Scheduler {
     public void sleep(int milliseconds) {
         // THIS IF STATEMENT DOES NOT MAKE A DIFFERENCE TO OUTPUT,
         // IT ONLY MAKES SURE THAT AN ERROR DOESN'T HAPPEN.
-        if(milliseconds <= 250) {
+        /*if(milliseconds <= 250) {
             milliseconds = 251;
-        }
+        }*/
 
         // Process sleepUntil time will be the current time plus the added time.
-        var tempRunningProcess = runningProcess;
+        var tempRunningProcess = runningProcess.get();
         tempRunningProcess.setSleepUntil(clock.millis() + milliseconds);
         tempRunningProcess.resetProcessTimeoutCount(); // Reset processTimeoutCount since the process is sleeping.
 
@@ -120,20 +120,21 @@ public class Scheduler {
     // Stop running process if there is one; add it to the end of the LL
     // if it hasn't finished, then run first process in LL.
     private void switchProcess() {
-        var tempRunningProcess = runningProcess;
-        if(tempRunningProcess != null) {
-            runningProcess = null;
+        if(runningProcess.get() != null) {
+            var tempRunningProcess = runningProcess.get();
+            runningProcess.set(null);
             tempRunningProcess.stop();
             if(!(tempRunningProcess.isDone())) {
                 // If the process did not finish, add it back to the end of the LL.
                 addProcess(tempRunningProcess);
             }
         }
+        awakenProcesses(); // Awaken any processes that need to be before a new process is run.
         int priority;
         if((priority = decidePriority()) != -1 && !(processListsArray.get(priority).isEmpty())) {
             // Only run a process if there exists at least one that isn't asleep.
-            runningProcess = processListsArray.get(priority).remove(0);
-            runningProcess.run();
+            runningProcess.set(processListsArray.get(priority).remove(0));
+            runningProcess.get().run();
         }
     }
 }
