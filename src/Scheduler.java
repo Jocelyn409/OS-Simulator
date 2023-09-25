@@ -42,7 +42,10 @@ public class Scheduler {
         }
     }
 
-    // Decides a priority at random based on which lists aren't empty by using checkEmptyLists().
+    // Real-Time = 0, Interactive = 1, Background = 2, If all lists are empty = -1.
+    // Decides a priority list to be taken from at random based on which lists aren't empty.
+    // If a list is chosen, it will check to see if that list is empty before returning its respective number,
+    // else if the chosen list is empty, it will return the number for the priority higher than it.
     private int decidePriority() {
         if(!realTimeProcesses.isEmpty()) {
             switch(random.nextInt(10)) {
@@ -89,15 +92,16 @@ public class Scheduler {
         runningProcess.setSleepUntil(clock.millis() + milliseconds);
         runningProcess.resetProcessTimeoutCount(); // Reset processTimeoutCount since the process is sleeping.
 
-        // Add tempRunningProcess to sleepingProcess.
         sleepingProcesses.add(runningProcess);
 
+        // Stop runningProcess with the code provided in the document.
         var tempRunningProcess = runningProcess;
         runningProcess = null;
 
         switchProcess(); // Switch process since we need a new process to run.
-        tempRunningProcess.stop();
-    }
+
+        tempRunningProcess.stop(); // tempRunningProcess needs to be stopped after switchProcess().
+    }                                                                   
 
     // If createProcess() is called with no overload, call the overloaded method
     // with the level being Interactive as a default.

@@ -1,4 +1,4 @@
-public class Background extends UserlandProcess {
+public class BackgroundProcess extends UserlandProcess {
     @Override
     public void run() {
         while(true) {
