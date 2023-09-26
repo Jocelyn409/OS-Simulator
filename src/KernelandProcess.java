@@ -16,7 +16,7 @@ public class KernelandProcess {
         started = false;
         this.level = level;
         processTimeoutCount = 0;
-        arrayInts = new int[10];
+        arrayInts = new int[] {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1}; // Length of 10.
     }
 
     // Suspend thread only if thread has already started.
@@ -56,6 +56,16 @@ public class KernelandProcess {
         }
     }
 
+    public int fillArrayInt(int input) {
+        for(int i = 0; i < 10; i++) {
+            if(arrayInts[i] == -1) {
+                arrayInts[i] = input;
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public void resetProcessTimeoutCount() {
         processTimeoutCount = 0;
     }
@@ -90,5 +100,9 @@ public class KernelandProcess {
 
     public int getProcessTimeoutCount() {
         return processTimeoutCount;
+    }
+
+    public int[] getArrayInts() {
+        return arrayInts;
     }
 }

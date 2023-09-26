@@ -1,9 +1,11 @@
 public class Kernel implements Device {
+    private Scheduler scheduler;
+    private VirtualFileSystem VFS;
+
     public Kernel() {
         scheduler = new Scheduler();
+        VFS = new VirtualFileSystem();
     }
-
-    private Scheduler scheduler;
 
     public void sleep(int milliseconds) {
         scheduler.sleep(milliseconds);
@@ -18,9 +20,18 @@ public class Kernel implements Device {
     }
 
     @Override
-    public int Open(String s) {
-        scheduler.getRunningProcess();
-        return 0;
+    public int Open(String input) {
+        KernelandProcess runningProcess = scheduler.getRunningProcess();
+        int[] processInts = runningProcess.getArrayInts();
+        for(int i = 0; i < 10; i++) {
+            if(processInts[i] == -1) {
+                int idVFS;
+                if((idVFS = VFS.Open(input)) != -1) {
+                    return runningProcess.fillArrayInt(idVFS);
+                }
+            }
+        }
+        return -1;
     }
 
     @Override
