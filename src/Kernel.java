@@ -1,6 +1,6 @@
 public class Kernel implements Device {
     private Scheduler scheduler;
-    private VirtualFileSystem VFS;
+    private VirtualFileSystem VFS; // ??? is this correct???
 
     public Kernel() {
         scheduler = new Scheduler();
@@ -36,11 +36,15 @@ public class Kernel implements Device {
 
     @Override
     public void Close(int id) {
-
+        KernelandProcess runningProcess = scheduler.getRunningProcess();
+        runningProcess.resetArrayInt(id); // this is wrong needs to reset vfs instead
     }
 
     @Override
     public byte[] Read(int id, int size) {
+        KernelandProcess runningProcess = scheduler.getRunningProcess();
+        int[] processInts = runningProcess.getArrayInts();
+
         return new byte[0];
     }
 

@@ -17,6 +17,7 @@ public class Scheduler {
     private TimerTask timerTask;
     private Clock clock;
     private Random random;
+    private Kernel kernel;
 
     public Scheduler() {
         processListsArray = Collections.synchronizedList(new ArrayList<>());
@@ -129,6 +130,9 @@ public class Scheduler {
         if(runningProcess != null && !(runningProcess.isDone())) {
             // If runningProcess is not null and the process did not finish, add it back to the end of the LL.
             addProcess(runningProcess);
+        }
+        else {
+            kernel.Close();
         }
         awakenProcesses(); // Awaken any processes that need to be before a new process is run.
         int priority;

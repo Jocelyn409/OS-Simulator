@@ -105,4 +105,8 @@ public class KernelandProcess {
     public int[] getArrayInts() {
         return arrayInts;
     }
+
+    public void resetArrayInt(int id) {
+        arrayInts[id] = -1;
+    }
 }
