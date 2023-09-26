@@ -42,6 +42,10 @@ public class Scheduler {
         }
     }
 
+    public KernelandProcess getRunningProcess() {
+        return runningProcess;
+    }
+
     // Real-Time = 0, Interactive = 1, Background = 2, If all lists are empty = -1.
     // Decides a priority list to be taken from at random based on which lists aren't empty.
     // If a list is chosen, it will check to see if that list is empty before returning its respective number,

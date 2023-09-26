@@ -7,6 +7,7 @@ public class KernelandProcess {
     private long sleepUntil;
     private Priority.Level level;
     private int processTimeoutCount;
+    private int[] arrayInts;
 
     public KernelandProcess(UserlandProcess up, Priority.Level level) {
         thread = new Thread(up);
@@ -15,6 +16,7 @@ public class KernelandProcess {
         started = false;
         this.level = level;
         processTimeoutCount = 0;
+        arrayInts = new int[10];
     }
 
     // Suspend thread only if thread has already started.

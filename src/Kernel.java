@@ -1,4 +1,4 @@
-public class Kernel {
+public class Kernel implements Device {
     public Kernel() {
         scheduler = new Scheduler();
     }
@@ -15,5 +15,31 @@ public class Kernel {
 
     public int createProcess(UserlandProcess up) {
         return scheduler.createProcess(up);
+    }
+
+    @Override
+    public int Open(String s) {
+        scheduler.getRunningProcess();
+        return 0;
+    }
+
+    @Override
+    public void Close(int id) {
+
+    }
+
+    @Override
+    public byte[] Read(int id, int size) {
+        return new byte[0];
+    }
+
+    @Override
+    public int Write(int id, byte[] data) {
+        return 0;
+    }
+
+    @Override
+    public void Seek(int id, int to) {
+
     }
 }
