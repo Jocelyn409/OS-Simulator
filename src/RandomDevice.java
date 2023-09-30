@@ -44,6 +44,6 @@ public class RandomDevice implements Device {
 
     @Override
     public void Seek(int id, int to) {
-        // Read random bytes but not return them???
+        Read(id, to);
     }
 }

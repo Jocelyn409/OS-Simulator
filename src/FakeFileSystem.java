@@ -6,17 +6,16 @@ public class FakeFileSystem implements Device {
 
     public FakeFileSystem(String filename) { // might not be string, might be a literal file?
         randomFiles = new RandomAccessFile[10];
-        if(filename.isEmpty()) {
-            throw new IllegalArgumentException("No filename given to FakeFileSystem.");
-        }
     }
 
     @Override
-    public int Open(String name) {
+    public int Open(String filename) {
+        if(filename.isEmpty()) { // this goes here or?
+            throw new IllegalArgumentException("No filename given to FakeFileSystem.");
+        }
         for(int i = 0; i < 10; i++) {
             if(randomFiles[i] == null) {
-                // rw or rws or rwd?
-                try(RandomAccessFile file = new RandomAccessFile(name, "rw")) {
+                try(RandomAccessFile file = new RandomAccessFile(filename, "rw")) {
                     randomFiles[i] = file;
                 } catch(IOException e) {
                     throw new RuntimeException(e);
@@ -29,14 +28,20 @@ public class FakeFileSystem implements Device {
 
     @Override
     public void Close(int id) {
-        for(int i = 0; i < 10; i++) {
+        /*for(int i = 0; i < 10; i++) {
             try {
                 randomFiles[i].close();
                 randomFiles[i] = null;
             } catch(IOException e) {
                 throw new RuntimeException(e);
             }
+        }*/
+        try {
+            randomFiles[id].close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+        randomFiles[id] = null;
     }
 
     @Override

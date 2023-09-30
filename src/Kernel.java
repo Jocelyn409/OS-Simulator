@@ -1,10 +1,12 @@
 public class Kernel implements Device {
     private Scheduler scheduler;
     private VirtualFileSystem VFS; // ??? is this correct???
+    private KernelandProcess runningProcess;
 
     public Kernel() {
         scheduler = new Scheduler();
         VFS = new VirtualFileSystem();
+        runningProcess = null;
     }
 
     public void sleep(int milliseconds) {
@@ -36,13 +38,13 @@ public class Kernel implements Device {
 
     @Override
     public void Close(int id) {
-        KernelandProcess runningProcess = scheduler.getRunningProcess();
+        int index = runningProcess.getAndResetArrayIntIndex(id);
         runningProcess.resetArrayInt(id); // this is wrong needs to reset vfs instead
     }
 
     @Override
     public byte[] Read(int id, int size) {
-        KernelandProcess runningProcess = scheduler.getRunningProcess();
+        // something like get the index from id then pass that index to vfs and close that?
         int[] processInts = runningProcess.getArrayInts();
 
         return new byte[0];
