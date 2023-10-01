@@ -56,7 +56,7 @@ public class KernelandProcess {
         }
     }
 
-    public int getAndResetArrayIntIndex(int input) {
+    public int getArrayIntIndex(int input) {
         for(int i = 0; i < 10; i++) {
             if(arrayInts[i] == input) {
                 arrayInts[i] = -1;
@@ -64,6 +64,10 @@ public class KernelandProcess {
             }
         }
         return -1;
+    }
+
+    public void resetArrayInt(int id) {
+        arrayInts[id] = -1;
     }
 
     public int fillArrayInt(int input) {
@@ -114,9 +118,5 @@ public class KernelandProcess {
 
     public int[] getArrayInts() {
         return arrayInts;
-    }
-
-    public void resetArrayInt(int id) {
-        arrayInts[id] = -1;
     }
 }

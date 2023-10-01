@@ -38,8 +38,10 @@ public class Kernel implements Device {
 
     @Override
     public void Close(int id) {
-        int index = runningProcess.getAndResetArrayIntIndex(id);
-        runningProcess.resetArrayInt(id); // this is wrong needs to reset vfs instead
+        int index = runningProcess.getArrayIntIndex(id);
+        // convert index to something else? or just index???
+        VFS.Close(index);
+        runningProcess.resetArrayInt(id);
     }
 
     @Override
