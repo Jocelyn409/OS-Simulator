@@ -2,6 +2,7 @@ import java.util.Random;
 
 public class RandomDevice implements Device {
     private Random[] arrayRandom;
+    private static int ID = 0;
 
     public RandomDevice() {
         arrayRandom = new Random[10];
@@ -19,10 +20,10 @@ public class RandomDevice implements Device {
         for(int i = 0; i < 10; i++) {
             if(arrayRandom[i] == null) {
                 arrayRandom[i] = arrayInput;
-                return 0; // Return 0 since execution was successful.
+                return ID++; // Return ID since execution was successful.
             }
         }
-        return 1; // Return 1 since execution failed (no empty spot in array).
+        return -1; // Return -1 since execution failed (no empty spot in array).
     }
 
     @Override

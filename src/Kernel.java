@@ -1,6 +1,6 @@
 public class Kernel implements Device {
     private Scheduler scheduler;
-    private VirtualFileSystem VFS; // ??? is this correct???
+    private VirtualFileSystem VFS;
     private KernelandProcess runningProcess;
 
     public Kernel() {
@@ -33,32 +33,38 @@ public class Kernel implements Device {
                 }
             }
         }
+        return -1; // Return -1 since execution failed.
+    }
+
+    @Override
+    public void Close(int ID) { // IDK IF THESE THINGS ARE RIGHT OR NOTTTT!!!!
+        // we somehow need to translate the ID to VFS ID.
+        if(runningProcess.findArrayInt(ID)) {
+            VFS.Close(ID);
+            runningProcess.resetArrayInt(ID);
+        }
+    }
+
+    @Override
+    public byte[] Read(int ID, int size) {
+        if(runningProcess.findArrayInt(ID)) {
+            return VFS.Read(ID, size);
+        }
+        throw new RuntimeException("No such valid ID " + ID + " in runningProcess arrayInts.");
+    }
+
+    @Override
+    public int Write(int ID, byte[] data) {
+        if(runningProcess.findArrayInt(ID)) {
+            return VFS.Write(ID, data);
+        }
         return -1;
     }
 
     @Override
-    public void Close(int id) {
-        int index = runningProcess.getArrayIntIndex(id);
-        // convert index to something else? or just index???
-        VFS.Close(index);
-        runningProcess.resetArrayInt(id);
-    }
-
-    @Override
-    public byte[] Read(int id, int size) {
-        // something like get the index from id then pass that index to vfs and close that?
-        int[] processInts = runningProcess.getArrayInts();
-
-        return new byte[0];
-    }
-
-    @Override
-    public int Write(int id, byte[] data) {
-        return 0;
-    }
-
-    @Override
-    public void Seek(int id, int to) {
-
+    public void Seek(int ID, int to) {
+        if(runningProcess.findArrayInt(ID)) {
+            VFS.Seek(ID, to);
+        }
     }
 }

@@ -3,8 +3,9 @@ import java.io.RandomAccessFile;
 
 public class FakeFileSystem implements Device {
     private RandomAccessFile[] randomFiles;
+    private static int ID = 0;
 
-    public FakeFileSystem(String filename) { // might not be string, might be a literal file?
+    public FakeFileSystem() {
         randomFiles = new RandomAccessFile[10];
     }
 
@@ -20,22 +21,14 @@ public class FakeFileSystem implements Device {
                 } catch(IOException e) {
                     throw new RuntimeException(e);
                 }
-                return 0; // Return 0 since execution was successful.
+                return ID++; // Return ID since execution was successful.
             }
         }
-        return 1; // Return 1 since execution failed (no empty spot in array).
+        return -1; // Return -1 since execution failed (no empty spot in array).
     }
 
     @Override
     public void Close(int id) {
-        /*for(int i = 0; i < 10; i++) {
-            try {
-                randomFiles[i].close();
-                randomFiles[i] = null;
-            } catch(IOException e) {
-                throw new RuntimeException(e);
-            }
-        }*/
         try {
             randomFiles[id].close();
         } catch (IOException e) {

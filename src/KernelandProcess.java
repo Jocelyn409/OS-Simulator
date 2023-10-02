@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 @SuppressWarnings("all")
 public class KernelandProcess {
     private Thread thread;
@@ -56,6 +58,10 @@ public class KernelandProcess {
         }
     }
 
+    public int[] getArrayInts() {
+        return arrayInts;
+    }
+
     public int getArrayIntIndex(int input) {
         for(int i = 0; i < 10; i++) {
             if(arrayInts[i] == input) {
@@ -66,8 +72,8 @@ public class KernelandProcess {
         return -1;
     }
 
-    public void resetArrayInt(int id) {
-        arrayInts[id] = -1;
+    public void resetArrayInt(int ID) {
+        arrayInts[ID] = -1;
     }
 
     public int fillArrayInt(int input) {
@@ -78,6 +84,15 @@ public class KernelandProcess {
             }
         }
         return -1;
+    }
+
+    public boolean findArrayInt(int ID) {
+        for(int i = 0; i < 10; i++) {
+            if(arrayInts[i] == ID) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void resetProcessTimeoutCount() {
@@ -114,9 +129,5 @@ public class KernelandProcess {
 
     public int getProcessTimeoutCount() {
         return processTimeoutCount;
-    }
-
-    public int[] getArrayInts() {
-        return arrayInts;
     }
 }

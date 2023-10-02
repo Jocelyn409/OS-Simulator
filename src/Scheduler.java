@@ -132,7 +132,10 @@ public class Scheduler {
             addProcess(runningProcess);
         }
         else {
-            //kernel.Close(runningProcess.);
+            // idfk???????????????????????
+            for(int i = 0; i < 10; i++) {
+                kernel.Close(i);
+            }
         }
         awakenProcesses(); // Awaken any processes that need to be before a new process is run.
         int priority;

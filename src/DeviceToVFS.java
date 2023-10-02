@@ -1,10 +1,10 @@
 public class DeviceToVFS {
     private Device device;
-    private int id;
+    private int ID;
 
-    public DeviceToVFS(Device device, int id) {
+    public DeviceToVFS(Device device, int ID) {
         this.device = device;
-        this.id = id;
+        this.ID = ID;
     }
 
     public Device getDevice() {
@@ -15,11 +15,11 @@ public class DeviceToVFS {
         this.device = device;
     }
 
-    public int getId() {
-        return id;
+    public int getID() {
+        return ID;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setID(int id) {
+        this.ID = id;
     }
 }

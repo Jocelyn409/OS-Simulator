@@ -1,5 +1,6 @@
 public class VirtualFileSystem implements Device {
     private DeviceToVFS[] deviceMap;
+    private static int ID = 0;
 
     public VirtualFileSystem() {
         deviceMap = new DeviceToVFS[10];
@@ -12,43 +13,38 @@ public class VirtualFileSystem implements Device {
         Device chosenDevice;
         switch(chosenDeviceString) {
             case "random" -> chosenDevice = new RandomDevice();
-            case "file" -> chosenDevice = new FakeFileSystem(chosenDeviceString);
+            case "file" -> chosenDevice = new FakeFileSystem();
             default -> {
-                return 1; // maybe not? maybe set it to null?
+                return -1; // Return -1 since execution failed.
             }
         }
-        // IT DOESNT FEEL LIKE WE ARE DOING ANYTHING WITH THE ID????
-
-
-        // assign the chosenDevice to the array. that determines its position i think.
-        // again, why cant we just use a hashmap?
         for(int i = 0; i < 10; i++) {
             if(deviceMap[i] == null) {
-                deviceMap[i].setDevice(chosenDevice);
+                deviceMap[i] = new DeviceToVFS(chosenDevice, ID);
                 deviceMap[i].getDevice().Open(splitInput[1]);
-                return 0; // Return 0 since execution was successful.
+                return ID++; // Return ID since execution was successful.
             }
         }
-        return 1;
+        return -1; // Return -1 since execution failed.
     }
 
     @Override
-    public void Close(int id) {
-        deviceMap[id] = null;
+    public void Close(int ID) {
+        deviceMap[ID] = null;
     }
 
     @Override
-    public byte[] Read(int id, int size) {
-        return deviceMap[id].getDevice().Read(id, size);
+    public byte[] Read(int ID, int size) {
+        return deviceMap[ID].getDevice().Read(ID, size);
     }
 
     @Override
-    public int Write(int id, byte[] data) {
-        return deviceMap[id].getDevice().Write(id, data);
+    public int Write(int ID, byte[] data) {
+        return deviceMap[ID].getDevice().Write(ID, data);
     }
 
     @Override
-    public void Seek(int id, int to) {
-        deviceMap[id].getDevice().Seek(id, to);
+    public void Seek(int ID, int to) {
+        deviceMap[ID].getDevice().Seek(ID, to);
     }
 }
