@@ -2,7 +2,6 @@ import java.util.Random;
 
 public class RandomDevice implements Device {
     private Random[] arrayRandom;
-    private static int ID = 0;
 
     public RandomDevice() {
         arrayRandom = new Random[10];
@@ -20,31 +19,31 @@ public class RandomDevice implements Device {
         for(int i = 0; i < 10; i++) {
             if(arrayRandom[i] == null) {
                 arrayRandom[i] = arrayInput;
-                return ID++; // Return ID since execution was successful.
+                return i; // Return index since execution was successful.
             }
         }
         return -1; // Return -1 since execution failed (no empty spot in array).
     }
 
     @Override
-    public void Close(int id) {
-        arrayRandom[id] = null;
+    public void Close(int ID) {
+        arrayRandom[ID] = null;
     }
 
     @Override
-    public byte[] Read(int id, int size) {
+    public byte[] Read(int ID, int size) {
         byte[] randomBytes = new byte[size];
-        arrayRandom[id].nextBytes(randomBytes);
+        arrayRandom[ID].nextBytes(randomBytes);
         return randomBytes;
     }
 
     @Override
-    public int Write(int id, byte[] data) {
+    public int Write(int ID, byte[] data) {
         return 0;
     }
 
     @Override
-    public void Seek(int id, int to) {
-        Read(id, to);
+    public void Seek(int ID, int to) {
+        Read(ID, to);
     }
 }

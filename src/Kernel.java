@@ -26,10 +26,10 @@ public class Kernel implements Device {
         KernelandProcess runningProcess = scheduler.getRunningProcess();
         int[] processInts = runningProcess.getArrayInts();
         for(int i = 0; i < 10; i++) {
-            if(processInts[i] == -1) {
+            if(processInts[i] == -1) { // Found an empty spot in the array.
                 int idVFS;
                 if((idVFS = VFS.Open(input)) != -1) {
-                    return runningProcess.fillArrayInt(idVFS);
+                    return runningProcess.fillArrayInt(idVFS); // Return index since execution was successful.
                 }
             }
         }
@@ -37,34 +37,23 @@ public class Kernel implements Device {
     }
 
     @Override
-    public void Close(int ID) { // IDK IF THESE THINGS ARE RIGHT OR NOTTTT!!!!
-        // we somehow need to translate the ID to VFS ID.
-        if(runningProcess.findArrayInt(ID)) {
-            VFS.Close(ID);
-            runningProcess.resetArrayInt(ID);
-        }
+    public void Close(int ID) {
+        VFS.Close(runningProcess.getVFSIndex(ID));
+        runningProcess.resetArrayInt(ID);
     }
 
     @Override
     public byte[] Read(int ID, int size) {
-        if(runningProcess.findArrayInt(ID)) {
-            return VFS.Read(ID, size);
-        }
-        throw new RuntimeException("No such valid ID " + ID + " in runningProcess arrayInts.");
+        return VFS.Read(runningProcess.getVFSIndex(ID), size);
     }
 
     @Override
     public int Write(int ID, byte[] data) {
-        if(runningProcess.findArrayInt(ID)) {
-            return VFS.Write(ID, data);
-        }
-        return -1;
+        return VFS.Write(runningProcess.getVFSIndex(ID), data);
     }
 
     @Override
     public void Seek(int ID, int to) {
-        if(runningProcess.findArrayInt(ID)) {
-            VFS.Seek(ID, to);
-        }
+        VFS.Seek(runningProcess.getVFSIndex(ID), to);
     }
 }

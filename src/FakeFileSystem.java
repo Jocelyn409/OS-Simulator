@@ -3,7 +3,6 @@ import java.io.RandomAccessFile;
 
 public class FakeFileSystem implements Device {
     private RandomAccessFile[] randomFiles;
-    private static int ID = 0;
 
     public FakeFileSystem() {
         randomFiles = new RandomAccessFile[10];
@@ -21,27 +20,27 @@ public class FakeFileSystem implements Device {
                 } catch(IOException e) {
                     throw new RuntimeException(e);
                 }
-                return ID++; // Return ID since execution was successful.
+                return i; // Return index since execution was successful.
             }
         }
         return -1; // Return -1 since execution failed (no empty spot in array).
     }
 
     @Override
-    public void Close(int id) {
+    public void Close(int ID) {
         try {
-            randomFiles[id].close();
+            randomFiles[ID].close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        randomFiles[id] = null;
+        randomFiles[ID] = null;
     }
 
     @Override
-    public byte[] Read(int id, int size) {
+    public byte[] Read(int ID, int size) {
         byte[] readBytes = new byte[size];
         try {
-            randomFiles[id].read(readBytes);
+            randomFiles[ID].read(readBytes);
         } catch(IOException e) {
             throw new RuntimeException(e);
         }
@@ -49,9 +48,9 @@ public class FakeFileSystem implements Device {
     }
 
     @Override
-    public int Write(int id, byte[] data) {
+    public int Write(int ID, byte[] data) {
         try {
-            randomFiles[id].write(data);
+            randomFiles[ID].write(data);
         } catch(IOException e) {
             return -1;
         }
@@ -59,9 +58,9 @@ public class FakeFileSystem implements Device {
     }
 
     @Override
-    public void Seek(int id, int to) {
+    public void Seek(int ID, int to) {
         try {
-            randomFiles[id].seek(to);
+            randomFiles[ID].seek(to);
         } catch(IOException e) {
             throw new RuntimeException(e);
         }

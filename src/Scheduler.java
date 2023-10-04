@@ -31,6 +31,7 @@ public class Scheduler {
         timer.schedule(timerTask, 250, 250);
         clock = Clock.systemUTC();
         random = new Random();
+        kernel = new Kernel();
     }
 
     private class Interrupt extends TimerTask {

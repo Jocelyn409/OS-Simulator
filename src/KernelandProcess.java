@@ -58,18 +58,12 @@ public class KernelandProcess {
         }
     }
 
-    public int[] getArrayInts() {
-        return arrayInts;
+    public int getVFSIndex(int index) {
+        return arrayInts[index];
     }
 
-    public int getArrayIntIndex(int input) {
-        for(int i = 0; i < 10; i++) {
-            if(arrayInts[i] == input) {
-                arrayInts[i] = -1;
-                return i;
-            }
-        }
-        return -1;
+    public int[] getArrayInts() {
+        return arrayInts;
     }
 
     public void resetArrayInt(int ID) {
@@ -84,15 +78,6 @@ public class KernelandProcess {
             }
         }
         return -1;
-    }
-
-    public boolean findArrayInt(int ID) {
-        for(int i = 0; i < 10; i++) {
-            if(arrayInts[i] == ID) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public void resetProcessTimeoutCount() {
