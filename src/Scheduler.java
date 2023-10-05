@@ -17,8 +17,9 @@ public class Scheduler {
     private TimerTask timerTask;
     private Clock clock;
     private Random random;
+    private Kernel kernel;
 
-    public Scheduler() {
+    public Scheduler(Kernel kernel) {
         processListsArray = Collections.synchronizedList(new ArrayList<>());
         processListsArray.add(0, realTimeProcesses = Collections.synchronizedList(new ArrayList<>()));
         processListsArray.add(1, interactiveProcesses = Collections.synchronizedList(new ArrayList<>()));
@@ -30,6 +31,7 @@ public class Scheduler {
         timer.schedule(timerTask, 250, 250);
         clock = Clock.systemUTC();
         random = new Random();
+        this.kernel = kernel;
     }
 
     private class Interrupt extends TimerTask {
@@ -126,15 +128,18 @@ public class Scheduler {
     // Stop running process if there is one; add it to the end of the LL
     // if it hasn't finished, then run first process in LL.
     synchronized private void switchProcess() {
-        if(runningProcess != null && !(runningProcess.isDone())) {
-            // If runningProcess is not null and the process did not finish, add it back to the end of the LL.
-            addProcess(runningProcess);
-        }
-        else {
-            for(int i = 0; i < 10; i++) {
-
+        if(runningProcess != null) {
+            if(!(runningProcess.isDone())) {
+                // If runningProcess is not null and the process did not finish, add it back to the end of the LL.
+                addProcess(runningProcess);
+            }
+            else {
+                for(int i = 0; i < 10; i++) {
+                    kernel.Close(i);
+                }
             }
         }
+
         awakenProcesses(); // Awaken any processes that need to be before a new process is run.
         int priority;
         if((priority = decidePriority()) != -1 && !(processListsArray.get(priority).isEmpty())) {

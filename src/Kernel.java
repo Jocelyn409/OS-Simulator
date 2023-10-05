@@ -2,9 +2,10 @@ public class Kernel implements Device {
     private Scheduler scheduler;
     private VirtualFileSystem VFS;
     private KernelandProcess runningProcess;
+    private Kernel kernel = this;
 
     public Kernel() {
-        scheduler = new Scheduler();
+        scheduler = new Scheduler(kernel);
         VFS = new VirtualFileSystem();
         runningProcess = null;
     }
