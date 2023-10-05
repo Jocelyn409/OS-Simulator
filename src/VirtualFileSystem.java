@@ -3,7 +3,6 @@ public class VirtualFileSystem implements Device {
     private RandomDevice randomDevice = null;
     private FakeFileSystem fakeFileSystem = null;
 
-
     public VirtualFileSystem() {
         deviceMap = new DeviceToVFS[10];
     }

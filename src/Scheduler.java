@@ -17,7 +17,6 @@ public class Scheduler {
     private TimerTask timerTask;
     private Clock clock;
     private Random random;
-    private Kernel kernel;
 
     public Scheduler() {
         processListsArray = Collections.synchronizedList(new ArrayList<>());
@@ -31,7 +30,6 @@ public class Scheduler {
         timer.schedule(timerTask, 250, 250);
         clock = Clock.systemUTC();
         random = new Random();
-        kernel = new Kernel();
     }
 
     private class Interrupt extends TimerTask {
@@ -133,9 +131,8 @@ public class Scheduler {
             addProcess(runningProcess);
         }
         else {
-            // idfk???????????????????????
             for(int i = 0; i < 10; i++) {
-                kernel.Close(i);
+
             }
         }
         awakenProcesses(); // Awaken any processes that need to be before a new process is run.
