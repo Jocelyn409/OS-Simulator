@@ -9,6 +9,15 @@ public class OS {
         if(kernelInstance == null) {
             kernelInstance = new Kernel();
             kernelInstance.createProcess(init, level);
+            createProcess(new IAmTheWorld(), Priority.Level.Interactive);
+            createProcess(new GoodbyeWorld(), Priority.Level.Background);
+            createProcess(new RealTimeProcess(), Priority.Level.RealTime);
+            int index0 = kernelInstance.Open("random 100");
+            kernelInstance.Read(index0, 10);
+            int index1 = kernelInstance.Open("random 503");
+            kernelInstance.Read(index1, 10);
+            createProcess(new InteractiveProcess(), Priority.Level.Interactive);
+            createProcess(new BackgroundProcess(), Priority.Level.Background);
         }
         else {
             throw new RuntimeException("Startup already initiated.");

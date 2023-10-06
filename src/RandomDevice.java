@@ -1,10 +1,19 @@
+import java.util.Arrays;
 import java.util.Random;
 
 public class RandomDevice implements Device {
+    private static RandomDevice singleton = null;
     private Random[] arrayRandom;
 
-    public RandomDevice() {
+    private RandomDevice() {
         arrayRandom = new Random[10];
+    }
+
+    public static synchronized RandomDevice getInstance() {
+        if(singleton == null) {
+            singleton = new RandomDevice();
+        }
+        return singleton;
     }
 
     @Override
@@ -19,6 +28,7 @@ public class RandomDevice implements Device {
         for(int i = 0; i < 10; i++) {
             if(arrayRandom[i] == null) {
                 arrayRandom[i] = arrayInput;
+                System.out.println("Opened RandomDevice with ID " + i);
                 return i; // Return index since execution was successful.
             }
         }
@@ -27,6 +37,7 @@ public class RandomDevice implements Device {
 
     @Override
     public void Close(int ID) {
+        System.out.println("Closed " + arrayRandom[ID] + " in ID " + ID);
         arrayRandom[ID] = null;
     }
 
@@ -34,6 +45,7 @@ public class RandomDevice implements Device {
     public byte[] Read(int ID, int size) {
         byte[] randomBytes = new byte[size];
         arrayRandom[ID].nextBytes(randomBytes);
+        System.out.println("Read " + Arrays.toString(randomBytes) + " in ID " + ID);
         return randomBytes;
     }
 

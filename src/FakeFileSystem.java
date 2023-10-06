@@ -1,11 +1,20 @@
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.Arrays;
 
 public class FakeFileSystem implements Device {
+    private static FakeFileSystem singleton = null;
     private RandomAccessFile[] randomFiles;
 
-    public FakeFileSystem() {
+    private FakeFileSystem() {
         randomFiles = new RandomAccessFile[10];
+    }
+
+    public static synchronized FakeFileSystem getInstance() {
+        if(singleton == null) {
+            singleton = new FakeFileSystem();
+        }
+        return singleton;
     }
 
     @Override
@@ -33,6 +42,7 @@ public class FakeFileSystem implements Device {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        System.out.println("Closed " + randomFiles[ID] + " in ID " + ID);
         randomFiles[ID] = null;
     }
 
@@ -44,6 +54,7 @@ public class FakeFileSystem implements Device {
         } catch(IOException e) {
             throw new RuntimeException(e);
         }
+        System.out.println("Read " + Arrays.toString(readBytes) + " in ID " + ID);
         return readBytes;
     }
 
@@ -51,6 +62,7 @@ public class FakeFileSystem implements Device {
     public int Write(int ID, byte[] data) {
         try {
             randomFiles[ID].write(data);
+            System.out.println("Wrote " + Arrays.toString(data) + " to " + randomFiles[ID]);
         } catch(IOException e) {
             return -1;
         }

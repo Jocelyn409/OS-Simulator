@@ -1,24 +1,8 @@
 public class VirtualFileSystem implements Device {
     private DeviceToVFS[] deviceMap;
-    private RandomDevice randomDevice = null;
-    private FakeFileSystem fakeFileSystem = null;
 
     public VirtualFileSystem() {
         deviceMap = new DeviceToVFS[10];
-    }
-
-    private RandomDevice checkRandomDevice() {
-        if(randomDevice == null) {
-            return new RandomDevice();
-        }
-        return randomDevice;
-    }
-
-    private FakeFileSystem checkFakeFileSystem() {
-        if(fakeFileSystem == null) {
-            return new FakeFileSystem();
-        }
-        return fakeFileSystem;
     }
 
     @Override
@@ -27,8 +11,8 @@ public class VirtualFileSystem implements Device {
         String chosenDeviceString = splitInput[0];
         Device chosenDevice;
         switch(chosenDeviceString.toLowerCase()) {
-            case "random" -> chosenDevice = checkRandomDevice();
-            case "file" -> chosenDevice = checkFakeFileSystem();
+            case "random" -> chosenDevice = RandomDevice.getInstance();
+            case "file" -> chosenDevice = FakeFileSystem.getInstance();
             default -> {
                 throw new RuntimeException("VFS could not create device " + chosenDeviceString);
             }
