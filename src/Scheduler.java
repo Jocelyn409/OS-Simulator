@@ -44,7 +44,10 @@ public class Scheduler {
         }
     }
 
-    public KernelandProcess getRunningProcess() { // consider making synchronized
+    public KernelandProcess getRunningProcess() {
+        if(runningProcess == null) {
+
+        }
         return runningProcess;
     }
 

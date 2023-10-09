@@ -24,7 +24,12 @@ public class Kernel implements Device {
 
     @Override
     public int Open(String input) {
-        runningProcess = scheduler.getRunningProcess();
+        if(scheduler.getRunningProcess() != null) {
+            runningProcess = scheduler.getRunningProcess();
+        }
+        else if(runningProcess == null) {
+            return -1;
+        }
         int[] processInts = runningProcess.getArrayInts();
         for(int i = 0; i < 10; i++) {
             if(processInts[i] == -1) { // Found an empty spot in the array.
