@@ -55,7 +55,7 @@ public class FakeFileSystem implements Device {
         try {
             randomFiles[ID].read(readBytes);
         } catch(IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error reading from file.");
         }
         System.out.println("Read " + Arrays.toString(readBytes) + " in ID " + ID);
         return readBytes;
@@ -67,7 +67,7 @@ public class FakeFileSystem implements Device {
             randomFiles[ID].write(data);
             System.out.println("Wrote " + Arrays.toString(data) + " to " + randomFiles[ID]);
         } catch(IOException e) {
-            return -1;
+            throw new RuntimeException("Error writing to file.");
         }
         return 0;
     }

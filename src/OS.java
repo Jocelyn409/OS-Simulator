@@ -5,16 +5,17 @@ public class OS {
         if(kernelInstance == null) {
             kernelInstance = new Kernel();
             kernelInstance.createProcess(init, level);
-            int index0 = kernelInstance.Open("file toots.dat");
-            kernelInstance.Read(index0, 10);
+            int index0 = kernelInstance.Open("file toots.txt");
+            byte[] test = new byte[] {10};
+            kernelInstance.Write(index0, test);
+            //kernelInstance.Read(index0, 1);
             int index1 = kernelInstance.Open("random 503");
             kernelInstance.Read(index1, 10);
             createProcess(new IAmTheWorld());
             createProcess(new GoodbyeWorld(), Priority.Level.Background);
-            byte[] test = new byte[] {10, 51, 43, 9, -1};
-            kernelInstance.Write(index1, test);
             createProcess(new RealTimeProcess(), Priority.Level.RealTime);
             kernelInstance.Close(index1);
+            kernelInstance.Close(index0);
             createProcess(new InteractiveProcess(), Priority.Level.Interactive);
             createProcess(new BackgroundProcess(), Priority.Level.Background);
         }
