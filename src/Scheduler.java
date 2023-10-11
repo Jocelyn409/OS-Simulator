@@ -45,9 +45,6 @@ public class Scheduler {
     }
 
     public KernelandProcess getRunningProcess() {
-        if(runningProcess == null) {
-
-        }
         return runningProcess;
     }
 

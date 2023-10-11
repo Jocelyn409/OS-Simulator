@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 @SuppressWarnings("all")
 public class KernelandProcess {
     private Thread thread;
@@ -9,7 +7,7 @@ public class KernelandProcess {
     private long sleepUntil;
     private Priority.Level level;
     private int processTimeoutCount;
-    private int[] arrayInts;
+    private int[] indexArray;
 
     public KernelandProcess(UserlandProcess up, Priority.Level level) {
         thread = new Thread(up);
@@ -18,7 +16,7 @@ public class KernelandProcess {
         started = false;
         this.level = level;
         processTimeoutCount = 0;
-        arrayInts = new int[] {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1}; // Length of 10.
+        indexArray = new int[] {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1}; // Length of 10.
     }
 
     // Suspend thread only if thread has already started.
@@ -54,46 +52,32 @@ public class KernelandProcess {
                 case Interactive -> level = Priority.Level.Background;
             }
             processTimeoutCount = 0;
-            System.out.println("WE HAVE DEMOTED TO " + level + " for PID: " + PID);
+            System.out.println("We have demoted to " + level + " for PID: " + PID);
         }
     }
 
     public int getVFSIndex(int index) {
-        return arrayInts[index];
+        return indexArray[index];
     }
 
-    public int[] getArrayInts() {
-        return arrayInts;
+    public int[] getIndexArray() {
+        return indexArray;
     }
 
-    public void resetArrayInt(int ID) {
-        arrayInts[ID] = -1;
+    public void resetIndexArray(int ID) {
+        indexArray[ID] = -1;
     }
 
-    public int fillArrayInt(int input) {
-        for(int i = 0; i < 10; i++) {
-            if(arrayInts[i] == -1) {
-                arrayInts[i] = input;
-                return i;
-            }
-        }
-        return -1;
+    public void setIndexArray(int index, int input) {
+        indexArray[index] = input;
     }
 
     public void resetProcessTimeoutCount() {
         processTimeoutCount = 0;
     }
 
-    public void incrementRunsToTimeout() {
-        processTimeoutCount++;
-    }
-
     public int getPID() {
         return PID;
-    }
-
-    public void setPID(int PID) {
-        this.PID = PID;
     }
 
     public long getSleepUntil() {
@@ -108,11 +92,4 @@ public class KernelandProcess {
         return level;
     }
 
-    public void setLevel(Priority.Level level) {
-        this.level = level;
-    }
-
-    public int getProcessTimeoutCount() {
-        return processTimeoutCount;
-    }
 }

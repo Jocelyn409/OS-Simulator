@@ -7,9 +7,13 @@
     <list default="true" id="25881d44-c1a1-424a-907f-c4c6a345470a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/OS Simulator/OS.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OS Simulator/OS.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/FakeFileSystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/FakeFileSystem.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Kernel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Kernel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/KernelandProcess.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/KernelandProcess.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/OS.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/OS.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RandomDevice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/RandomDevice.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Scheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Scheduler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/VirtualFileSystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/VirtualFileSystem.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -124,11 +128,31 @@
       <workItem from="1696567199571" duration="2149000" />
       <workItem from="1696719889432" duration="2374000" />
       <workItem from="1696722306877" duration="1609000" />
+      <workItem from="1696836717761" duration="58000" />
+      <workItem from="1696901522334" duration="6021000" />
+      <workItem from="1696983315821" duration="2256000" />
+      <workItem from="1696988232188" duration="2503000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/FakeFileSystem.java</url>
+          <line>34</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/OS.java</url>
+          <line>7</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

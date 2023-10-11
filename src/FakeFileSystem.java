@@ -6,10 +6,6 @@ public class FakeFileSystem implements Device {
     private static FakeFileSystem singleton = null;
     private RandomAccessFile[] randomFiles;
 
-    private FakeFileSystem() {
-        randomFiles = new RandomAccessFile[10];
-    }
-
     public static synchronized FakeFileSystem getInstance() {
         if(singleton == null) {
             singleton = new FakeFileSystem();
@@ -17,11 +13,18 @@ public class FakeFileSystem implements Device {
         return singleton;
     }
 
+    private FakeFileSystem() {
+        randomFiles = new RandomAccessFile[10];
+    }
+
     @Override
     public int Open(String filename) {
-        if(filename.isEmpty()) { // this goes here or?
+        if(filename.isEmpty()) {
             throw new IllegalArgumentException("No filename given to FakeFileSystem.");
         }
+        System.out.println(filename);
+
+        // Find an empty spot in the array and assign a new RandomAccessFile to it.
         for(int i = 0; i < 10; i++) {
             if(randomFiles[i] == null) {
                 try(RandomAccessFile file = new RandomAccessFile(filename, "rw")) {

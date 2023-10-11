@@ -2,10 +2,9 @@ public class Kernel implements Device {
     private Scheduler scheduler;
     private VirtualFileSystem VFS;
     private KernelandProcess runningProcess;
-    private Kernel kernel = this;
 
     public Kernel() {
-        scheduler = new Scheduler(kernel);
+        scheduler = new Scheduler(this);
         VFS = new VirtualFileSystem();
         runningProcess = null;
     }
@@ -24,18 +23,25 @@ public class Kernel implements Device {
 
     @Override
     public int Open(String input) {
+        // This if else-if statement helps make sure that we return -1 (error) if runningProcess
+        // is null, and that we only assign the scheduler's runningProcess to it provided it
+        // isn't null, which helps keep runningProcess not null once a process starts.
         if(scheduler.getRunningProcess() != null) {
+            // If the scheduler's runningProcess is not null, assign it to this.runningProcess.
             runningProcess = scheduler.getRunningProcess();
         }
         else if(runningProcess == null) {
-            return -1;
+            return -1; // Return -1 as we can't
         }
-        int[] processInts = runningProcess.getArrayInts();
+
+        // Find an empty spot in the array and assign idVFS to it.
+        int[] processInts = runningProcess.getIndexArray();
         for(int i = 0; i < 10; i++) {
-            if(processInts[i] == -1) { // Found an empty spot in the array.
+            if(processInts[i] == -1) {
                 int idVFS;
                 if((idVFS = VFS.Open(input)) != -1) {
-                    return runningProcess.fillArrayInt(idVFS); // Return index since execution was successful.
+                    runningProcess.setIndexArray(i, idVFS);
+                    return i; // Return index since execution was successful.
                 }
             }
         }
@@ -45,7 +51,7 @@ public class Kernel implements Device {
     @Override
     public void Close(int ID) {
         VFS.Close(runningProcess.getVFSIndex(ID));
-        runningProcess.resetArrayInt(ID);
+        runningProcess.resetIndexArray(ID);
     }
 
     @Override

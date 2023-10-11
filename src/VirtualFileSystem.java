@@ -8,18 +8,22 @@ public class VirtualFileSystem implements Device {
     @Override
     public int Open(String input) {
         String[] splitInput = input.split(" ", 2);
-        String chosenDeviceString = splitInput[0];
         Device chosenDevice;
-        switch(chosenDeviceString.toLowerCase()) {
+
+        // Open a device based on the input.
+        switch(splitInput[0].toLowerCase()) {
             case "random" -> chosenDevice = RandomDevice.getInstance();
             case "file" -> chosenDevice = FakeFileSystem.getInstance();
             default -> {
-                throw new RuntimeException("VFS could not create device " + chosenDeviceString);
+                throw new RuntimeException("VFS could not create device " + splitInput[0]);
             }
         }
+
+        // Find an empty spot in the array and assign a new DeviceToVFS to it.
         for(int i = 0; i < 10; i++) {
             if(deviceMap[i] == null) {
                 deviceMap[i] = new DeviceToVFS(chosenDevice, -1);
+                // Set the ID with the index from opening the device.
                 deviceMap[i].setID(deviceMap[i].getDevice().Open(splitInput[1]));
                 return i; // Return index since execution was successful.
             }

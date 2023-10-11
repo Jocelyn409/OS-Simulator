@@ -5,10 +5,6 @@ public class RandomDevice implements Device {
     private static RandomDevice singleton = null;
     private Random[] arrayRandom;
 
-    private RandomDevice() {
-        arrayRandom = new Random[10];
-    }
-
     public static synchronized RandomDevice getInstance() {
         if(singleton == null) {
             singleton = new RandomDevice();
@@ -16,15 +12,22 @@ public class RandomDevice implements Device {
         return singleton;
     }
 
+    private RandomDevice() {
+        arrayRandom = new Random[10];
+    }
+
     @Override
     public int Open(String seed) {
         Random arrayInput;
         if(!seed.isEmpty()) {
+            // If the seed isn't empty, make arrayInput based on parsing it as an integer.
             arrayInput = new Random(Integer.parseInt(seed));
         }
         else {
             arrayInput = new Random();
         }
+
+        // Find an empty spot in the array and assign arrayInput to it.
         for(int i = 0; i < 10; i++) {
             if(arrayRandom[i] == null) {
                 arrayRandom[i] = arrayInput;
@@ -51,6 +54,7 @@ public class RandomDevice implements Device {
 
     @Override
     public int Write(int ID, byte[] data) {
+        System.out.println("Nothing written to RandomDevice.");
         return 0;
     }
 
