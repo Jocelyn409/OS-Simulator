@@ -26,12 +26,13 @@ public class Kernel implements Device {
         // This if else-if statement helps make sure that we return -1 (error) if runningProcess
         // is null, and that we only assign the scheduler's runningProcess to it provided it
         // isn't null, which helps keep runningProcess not null once a process starts.
-        if(scheduler.getRunningProcess() != null) {
+        KernelandProcess schedulerRunningProcess = scheduler.getRunningProcess();
+        if(schedulerRunningProcess != null && !(schedulerRunningProcess.isDone())) {
             // If the scheduler's runningProcess is not null, assign it to this.runningProcess.
             runningProcess = scheduler.getRunningProcess();
         }
         else if(runningProcess == null) {
-            return -1; // Return -1 as we can't
+            return -1; // Return -1 as we don't have a runningProcess.
         }
 
         // Find an empty spot in the array and assign idVFS to it.
