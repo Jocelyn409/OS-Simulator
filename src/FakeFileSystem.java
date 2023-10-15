@@ -30,7 +30,7 @@ public class FakeFileSystem implements Device {
                 try(RandomAccessFile file = new RandomAccessFile(filename, "rw")) {
                     randomFiles[i] = file;
                 } catch(IOException e) {
-                    throw new RuntimeException(e);
+                    throw new RuntimeException("Couldn't open file " + filename);
                 }
                 return i; // Return index since execution was successful.
             }

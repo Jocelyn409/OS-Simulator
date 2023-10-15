@@ -23,15 +23,7 @@ public class Kernel implements Device {
 
     @Override
     public int Open(String input) {
-        // This if else-if statement helps make sure that we return -1 (error) if runningProcess
-        // is null, and that we only assign the scheduler's runningProcess to it provided it
-        // isn't null, which helps keep runningProcess not null once a process starts.
-        KernelandProcess schedulerRunningProcess = scheduler.getRunningProcess();
-        if(schedulerRunningProcess != null && !(schedulerRunningProcess.isDone())) {
-            // If the scheduler's runningProcess is not null, assign it to this.runningProcess.
-            runningProcess = scheduler.getRunningProcess();
-        }
-        else if(runningProcess == null) {
+        if((runningProcess = scheduler.getRunningProcess()) == null) {
             return -1; // Return -1 as we don't have a runningProcess.
         }
 
