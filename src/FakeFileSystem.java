@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class FakeFileSystem implements Device {
     private static FakeFileSystem singleton = null;
-    private RandomAccessFile[] randomFiles;
+    private RandomAccessFile[] files;
 
     public static synchronized FakeFileSystem getInstance() {
         if(singleton == null) {
@@ -14,7 +14,7 @@ public class FakeFileSystem implements Device {
     }
 
     private FakeFileSystem() {
-        randomFiles = new RandomAccessFile[10];
+        files = new RandomAccessFile[10];
     }
 
     @Override
@@ -26,13 +26,13 @@ public class FakeFileSystem implements Device {
 
         // Find an empty spot in the array and assign a new RandomAccessFile to it.
         for(int i = 0; i < 10; i++) {
-            if(randomFiles[i] == null) {
-                try(RandomAccessFile file = new RandomAccessFile(filename, "rw")) {
-                    randomFiles[i] = file;
+            if(files[i] == null) {
+                try {
+                    files[i] = new RandomAccessFile(filename, "rw");
+                    return i; // Return index since execution was successful.
                 } catch(IOException e) {
-                    throw new RuntimeException("Couldn't open file " + filename);
+                    return -1;
                 }
-                return i; // Return index since execution was successful.
             }
         }
         return -1; // Return -1 since execution failed (no empty spot in array).
@@ -41,19 +41,19 @@ public class FakeFileSystem implements Device {
     @Override
     public void Close(int ID) {
         try {
-            randomFiles[ID].close();
+            files[ID].close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("Closed " + randomFiles[ID] + " in ID " + ID);
-        randomFiles[ID] = null;
+        System.out.println("Closed " + files[ID] + " in ID " + ID);
+        files[ID] = null;
     }
 
     @Override
     public byte[] Read(int ID, int size) {
         byte[] readBytes = new byte[size];
         try {
-            randomFiles[ID].read(readBytes);
+            files[ID].read(readBytes);
         } catch(IOException e) {
             throw new RuntimeException("Error reading from file.");
         }
@@ -64,8 +64,8 @@ public class FakeFileSystem implements Device {
     @Override
     public int Write(int ID, byte[] data) {
         try {
-            randomFiles[ID].write(data);
-            System.out.println("Wrote " + Arrays.toString(data) + " to " + randomFiles[ID]);
+            files[ID].write(data);
+            System.out.println("Wrote " + Arrays.toString(data) + " to " + files[ID]);
         } catch(IOException e) {
             throw new RuntimeException("Error writing to file " + e);
         }
@@ -75,7 +75,7 @@ public class FakeFileSystem implements Device {
     @Override
     public void Seek(int ID, int to) {
         try {
-            randomFiles[ID].seek(to);
+            files[ID].seek(to);
         } catch(IOException e) {
             throw new RuntimeException("Error seeking in file " + e);
         }

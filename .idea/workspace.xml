@@ -5,16 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="25881d44-c1a1-424a-907f-c4c6a345470a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/TransferText.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/100" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/javacore.20230918.224108.23876.0001.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OS Simulator/OS.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OS Simulator/OS.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DeviceToVFS.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/DeviceToVFS.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TransferFrom.txt" beforeDir="false" afterPath="$PROJECT_DIR$/TransferFrom.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TransferTo.txt" beforeDir="false" afterPath="$PROJECT_DIR$/TransferTo.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/FakeFileSystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/FakeFileSystem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/OS.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/OS.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/VirtualFileSystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/VirtualFileSystem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/toots.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Kernel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Kernel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Scheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Scheduler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/TransferText.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/TransferText.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -137,6 +134,7 @@
       <workItem from="1697002074603" duration="1664000" />
       <workItem from="1697004146323" duration="223000" />
       <workItem from="1697334679887" duration="14608000" />
+      <workItem from="1697401430897" duration="3164000" />
     </task>
     <servers />
   </component>
@@ -151,6 +149,11 @@
           <line>6</line>
           <properties field="randomFiles" class="FakeFileSystem" />
           <option name="timeStamp" value="23" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/FakeFileSystem.java</url>
+          <line>43</line>
+          <option name="timeStamp" value="24" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
