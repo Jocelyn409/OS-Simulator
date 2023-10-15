@@ -22,9 +22,10 @@ public class VirtualFileSystem implements Device {
         // Find an empty spot in the array and assign a new DeviceToVFS to it.
         for(int i = 0; i < 10; i++) {
             if(deviceMap[i] == null) {
-                deviceMap[i] = new DeviceToVFS(chosenDevice, -1);
+                deviceMap[i] = new DeviceToVFS(chosenDevice);
                 // Set the ID with the index from opening the device.
                 deviceMap[i].setID(deviceMap[i].getDevice().Open(splitInput[1]));
+                System.out.println("Opened device " + splitInput[0] + " " + splitInput[1]);
                 return i; // Return index since execution was successful.
             }
         }
@@ -33,8 +34,10 @@ public class VirtualFileSystem implements Device {
 
     @Override
     public void Close(int ID) {
-        deviceMap[ID].getDevice().Close(deviceMap[ID].getID());
-        deviceMap[ID] = null;
+        try {
+            deviceMap[ID].getDevice().Close(deviceMap[ID].getID());
+            deviceMap[ID] = null;
+        } catch(ArrayIndexOutOfBoundsException ignore) { }
     }
 
     @Override

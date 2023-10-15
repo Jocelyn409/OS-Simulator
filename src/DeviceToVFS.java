@@ -2,9 +2,8 @@ public class DeviceToVFS {
     private Device device;
     private int ID;
 
-    public DeviceToVFS(Device device, int ID) {
+    public DeviceToVFS(Device device) {
         this.device = device;
-        this.ID = ID;
     }
 
     public Device getDevice() {

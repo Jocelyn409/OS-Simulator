@@ -67,7 +67,7 @@ public class FakeFileSystem implements Device {
             randomFiles[ID].write(data);
             System.out.println("Wrote " + Arrays.toString(data) + " to " + randomFiles[ID]);
         } catch(IOException e) {
-            throw new RuntimeException("Error writing to file.");
+            throw new RuntimeException("Error writing to file " + e);
         }
         return 0;
     }
@@ -77,7 +77,7 @@ public class FakeFileSystem implements Device {
         try {
             randomFiles[ID].seek(to);
         } catch(IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error seeking in file " + e);
         }
     }
 }
