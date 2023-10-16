@@ -8,9 +8,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TransferFrom.txt" beforeDir="false" afterPath="$PROJECT_DIR$/TransferFrom.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TransferTo.txt" beforeDir="false" afterPath="$PROJECT_DIR$/TransferTo.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/FakeFileSystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/FakeFileSystem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Kernel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Kernel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Scheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Scheduler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/TransferText.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/TransferText.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -135,6 +132,7 @@
       <workItem from="1697004146323" duration="223000" />
       <workItem from="1697334679887" duration="14608000" />
       <workItem from="1697401430897" duration="3164000" />
+      <workItem from="1697427980221" duration="469000" />
     </task>
     <servers />
   </component>
@@ -149,11 +147,6 @@
           <line>6</line>
           <properties field="randomFiles" class="FakeFileSystem" />
           <option name="timeStamp" value="23" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/FakeFileSystem.java</url>
-          <line>43</line>
-          <option name="timeStamp" value="24" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
