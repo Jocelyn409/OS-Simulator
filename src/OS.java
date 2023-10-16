@@ -20,16 +20,16 @@ public class OS{
         startup(init, Priority.Level.Interactive);
     }
 
+    public static void sleep(int milliseconds) {
+        kernelInstance.sleep(milliseconds);
+    }
+
     public static int createProcess(UserlandProcess up) {
         return kernelInstance.createProcess(up);
     }
 
     public static int createProcess(UserlandProcess up, Priority.Level level) {
         return kernelInstance.createProcess(up, level);
-    }
-
-    public static void sleep(int milliseconds) {
-        kernelInstance.sleep(milliseconds);
     }
 
     public static int Open(String s) {
@@ -50,5 +50,21 @@ public class OS{
 
     public static void Seek(int ID, int to) {
         kernelInstance.Seek(ID, to);
+    }
+
+    public static int getPid() {
+        return kernelInstance.getPid();
+    }
+
+    public static int getPidByName(String input) {
+        return kernelInstance.getPidByName(input);
+    }
+
+    public static void sendMessage(KernelMessage km) {
+        kernelInstance.sendMessage(km);
+    }
+
+    public static KernelMessage waitForMessage() {
+        return kernelInstance.waitForMessage();
     }
 }

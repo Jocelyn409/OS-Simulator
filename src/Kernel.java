@@ -61,4 +61,20 @@ public class Kernel implements Device {
     public void Seek(int ID, int to) {
         VFS.Seek(runningProcess.getVFSIndex(ID), to);
     }
+
+    public int getPid() {
+        return scheduler.getPid();
+    }
+
+    public int getPidByName(String input) {
+        return scheduler.getPidByName(input);
+    }
+
+    public void sendMessage(KernelMessage km) {
+
+    }
+
+    public KernelMessage waitForMessage() {
+
+    }
 }

@@ -123,6 +123,22 @@ public class Scheduler {
         return newProcess.getPID();
     }
 
+    public int getPid() {
+        return runningProcess.getPID();
+    }
+
+    public int getPidByName(String input) {
+        for(int i = 0; i <= 2; i++) {
+            for(int listIndex = 0; listIndex < processListsArray.get(i).size(); listIndex++) {
+                KernelandProcess temp = processListsArray.get(i).get(listIndex);
+                if(temp.getProcessName().equals(input)) {
+                    return temp.getPID();
+                }
+            }
+        }
+        return -1;
+    }
+
     // Stop running process if there is one; add it to the end of the LL
     // if it hasn't finished, then run first process in LL.
     synchronized private void switchProcess() {

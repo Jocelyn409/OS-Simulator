@@ -1,3 +1,5 @@
+import java.util.LinkedList;
+
 @SuppressWarnings("all")
 public class KernelandProcess {
     private Thread thread;
@@ -8,6 +10,8 @@ public class KernelandProcess {
     private Priority.Level level;
     private int processTimeoutCount;
     private int[] indexArray;
+    private String processName;
+    private LinkedList<KernelMessage> messageQueue;
 
     public KernelandProcess(UserlandProcess up, Priority.Level level) {
         thread = new Thread(up);
@@ -17,6 +21,7 @@ public class KernelandProcess {
         this.level = level;
         processTimeoutCount = 0;
         indexArray = new int[] {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1}; // Length of 10.
+        processName = getClass().getName(); // not right
     }
 
     // Suspend thread only if thread has already started.
@@ -92,4 +97,7 @@ public class KernelandProcess {
         return level;
     }
 
+    public String getProcessName() {
+        return processName;
+    }
 }
