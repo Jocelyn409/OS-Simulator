@@ -3,7 +3,7 @@ public class IAmTheWorld extends UserlandProcess {
     public void run() {
         while(true) {
             System.out.println("I am the World");
-            OS.sleep(50);
+            OS.sleep(150);
         }
     }
 }

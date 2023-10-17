@@ -5,11 +5,12 @@ public class OS{
         if(kernelInstance == null) {
             kernelInstance = new Kernel();
             kernelInstance.createProcess(init, level);
-            createProcess(new TransferText());
+            createProcess(new IAmTheWorld());
             createProcess(new GoodbyeWorld(), Priority.Level.Background);
             createProcess(new RealTimeProcess(), Priority.Level.RealTime);
             createProcess(new InteractiveProcess(), Priority.Level.Interactive);
             createProcess(new BackgroundProcess(), Priority.Level.Background);
+            createProcess(new TransferText());
         }
         else {
             throw new RuntimeException("Startup already initiated.");
@@ -60,8 +61,8 @@ public class OS{
         return kernelInstance.getPidByName(input);
     }
 
-    public static void sendMessage(KernelMessage km) {
-        kernelInstance.sendMessage(km);
+    public static void sendMessage(KernelMessage kernelMessage) {
+        kernelInstance.sendMessage(kernelMessage);
     }
 
     public static KernelMessage waitForMessage() {

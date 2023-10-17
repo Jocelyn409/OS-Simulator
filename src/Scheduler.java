@@ -1,10 +1,5 @@
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.time.Clock;
-import java.util.Random;
-import java.util.ArrayList;
-import java.util.Collections;
 
 public class Scheduler {
     private List<List<KernelandProcess>> processListsArray;
@@ -12,6 +7,7 @@ public class Scheduler {
     private List<KernelandProcess> interactiveProcesses;
     private List<KernelandProcess> backgroundProcesses;
     private List<KernelandProcess> sleepingProcesses;
+    private HashMap<Integer, KernelandProcess> waitingProcesses;
     private KernelandProcess runningProcess;
     private Timer timer;
     private TimerTask timerTask;
@@ -24,6 +20,7 @@ public class Scheduler {
         processListsArray.add(1, interactiveProcesses = Collections.synchronizedList(new ArrayList<>()));
         processListsArray.add(2, backgroundProcesses = Collections.synchronizedList(new ArrayList<>()));
         sleepingProcesses = Collections.synchronizedList(new ArrayList<>());
+        waitingProcesses = new HashMap<>();
         runningProcess = null;
         timer = new Timer();
         timerTask = new Interrupt();
@@ -93,17 +90,14 @@ public class Scheduler {
     // its current list and adding it to the sleepingProcesses list.
     public void sleep(int milliseconds) {
         // Process sleepUntil time will be the current time plus the added time.
-        runningProcess.setSleepUntil(clock.millis() + milliseconds);
-        runningProcess.resetProcessTimeoutCount(); // Reset processTimeoutCount since the process is sleeping.
-
-        sleepingProcesses.add(runningProcess);
-
-        // Stop runningProcess with the code provided in the document.
         var tempRunningProcess = runningProcess;
         runningProcess = null;
+        tempRunningProcess.setSleepUntil(clock.millis() + milliseconds);
+        tempRunningProcess.resetProcessTimeoutCount(); // Reset processTimeoutCount since the process is sleeping.
+
+        sleepingProcesses.add(tempRunningProcess);
 
         switchProcess(); // Switch process since we need a new process to run.
-
         tempRunningProcess.stop(); // tempRunningProcess needs to be stopped after switchProcess().
     }                                                                   
 
@@ -137,6 +131,36 @@ public class Scheduler {
             }
         }
         return -1;
+    }
+
+    public void sendMessage(KernelMessage kernelMessage) {
+        // "it should populate the sender's pid"..?
+        KernelMessage message = new KernelMessage(kernelMessage);
+        KernelandProcess temp;
+        if((temp = waitingProcesses.get(message.getTargetPID())) != null) {
+            temp.addToMessageQueue(message);
+            if(temp.) {
+
+            }
+        }
+    }
+
+    public KernelMessage waitForMessage() {
+        var tempRunningProcess = runningProcess;
+        if(tempRunningProcess.getMessageQueue().size() > 0) {
+            return tempRunningProcess.getFirstMessageOnQueue();
+        }
+        else {
+            // idk if any of this is right tbh lol
+            runningProcess = null;
+
+            //need to remove it from other list maybe?
+            //but in sleep() we had issues with this.
+            waitingProcesses.put(tempRunningProcess.getPID(), tempRunningProcess);
+
+            switchProcess();
+            tempRunningProcess.stop();
+        }
     }
 
     // Stop running process if there is one; add it to the end of the LL

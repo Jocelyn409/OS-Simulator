@@ -70,11 +70,11 @@ public class Kernel implements Device {
         return scheduler.getPidByName(input);
     }
 
-    public void sendMessage(KernelMessage km) {
-
+    public void sendMessage(KernelMessage kernelMessage) {
+        scheduler.sendMessage(kernelMessage);
     }
 
     public KernelMessage waitForMessage() {
-
+        return scheduler.waitForMessage();
     }
 }

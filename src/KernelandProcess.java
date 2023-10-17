@@ -21,7 +21,7 @@ public class KernelandProcess {
         this.level = level;
         processTimeoutCount = 0;
         indexArray = new int[] {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1}; // Length of 10.
-        processName = getClass().getName(); // not right
+        processName = getClass().getName(); // not right???
     }
 
     // Suspend thread only if thread has already started.
@@ -59,6 +59,14 @@ public class KernelandProcess {
             processTimeoutCount = 0;
             System.out.println("We have demoted to " + level + " for PID: " + PID);
         }
+    }
+
+    public void addToMessageQueue(KernelMessage message) {
+        messageQueue.add(message);
+    }
+
+    public KernelMessage getFirstMessageOnQueue() {
+        return messageQueue.pop();
     }
 
     public int getVFSIndex(int index) {
@@ -99,5 +107,9 @@ public class KernelandProcess {
 
     public String getProcessName() {
         return processName;
+    }
+
+    public LinkedList<KernelMessage> getMessageQueue() {
+        return messageQueue;
     }
 }
