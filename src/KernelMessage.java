@@ -6,12 +6,11 @@ public class KernelMessage {
     private int messageJob;
     private byte[] bytes;
 
-    public KernelMessage(int senderPID) {
-        this.senderPID = senderPID;
-    }
-
     public KernelMessage(KernelMessage copyKernelMessage) {
-        this(copyKernelMessage.senderPID);
+        this.senderPID = copyKernelMessage.senderPID;
+        this.targetPID = copyKernelMessage.targetPID;
+        this.messageJob = copyKernelMessage.messageJob;
+        this.bytes = copyKernelMessage.bytes;
     }
 
     public int getSenderPID() {
