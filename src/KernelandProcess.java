@@ -61,6 +61,13 @@ public class KernelandProcess {
         }
     }
 
+    public boolean messageQueueIsEmpty() {
+        if(messageQueue.size() > 0) {
+            return false; // messageQueue is not empty.
+        }
+        return true; // messageQueue is empty.
+    }
+
     public void addToMessageQueue(KernelMessage message) {
         messageQueue.add(message);
     }

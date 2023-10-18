@@ -8,6 +8,7 @@ public class Scheduler {
     private List<KernelandProcess> backgroundProcesses;
     private List<KernelandProcess> sleepingProcesses;
     private HashMap<Integer, KernelandProcess> waitingProcesses;
+    private HashMap<Integer, KernelandProcess> messageTargets;
     private KernelandProcess runningProcess;
     private Timer timer;
     private TimerTask timerTask;
@@ -21,6 +22,7 @@ public class Scheduler {
         processListsArray.add(2, backgroundProcesses = Collections.synchronizedList(new ArrayList<>()));
         sleepingProcesses = Collections.synchronizedList(new ArrayList<>());
         waitingProcesses = new HashMap<>();
+        messageTargets = new HashMap<>();
         runningProcess = null;
         timer = new Timer();
         timerTask = new Interrupt();
@@ -111,6 +113,7 @@ public class Scheduler {
     public int createProcess(UserlandProcess up, Priority.Level level) {
         KernelandProcess newProcess = new KernelandProcess(up, level);
         addProcess(newProcess); // Add process to correct list.
+        messageTargets.put(newProcess.getPID(), newProcess);
         if(runningProcess == null) {
             switchProcess();
         }
@@ -134,30 +137,29 @@ public class Scheduler {
     }
 
     public void sendMessage(KernelMessage kernelMessage) {
-        // "it should populate the sender's pid"..?
         KernelMessage message = new KernelMessage(kernelMessage);
-        KernelandProcess temp;
-        if((temp = waitingProcesses.get(message.getTargetPID())) != null) {
-            temp.addToMessageQueue(message);
-            if(temp.) {
+        message.setSenderPID(runningProcess.getPID());
+        KernelandProcess targetProcess;
+        if((targetProcess = messageTargets.get(message.getTargetPID())) != null) {
+            targetProcess.addToMessageQueue(message);
 
+            // idk if this is right.
+            // his reasoning or explanation seems off.
+            if(targetProcess.messageQueueIsEmpty()) {
+                waitingProcesses.remove(targetProcess.getPID());
+                addProcess(targetProcess);
             }
         }
     }
 
     public KernelMessage waitForMessage() {
         var tempRunningProcess = runningProcess;
-        if(tempRunningProcess.getMessageQueue().size() > 0) {
+        if(!tempRunningProcess.messageQueueIsEmpty()) {
             return tempRunningProcess.getFirstMessageOnQueue();
         }
-        else {
-            // idk if any of this is right tbh lol
+        else { // idk if any of this is right tbh lol
             runningProcess = null;
-
-            //need to remove it from other list maybe?
-            //but in sleep() we had issues with this.
             waitingProcesses.put(tempRunningProcess.getPID(), tempRunningProcess);
-
             switchProcess();
             tempRunningProcess.stop();
         }
@@ -172,12 +174,13 @@ public class Scheduler {
                 addProcess(runningProcess);
             }
             else {
+                // Since process is done, remove it from messageTargets and close all its devices.
+                messageTargets.remove(runningProcess.getPID());
                 for(int i = 0; i < 10; i++) {
                     OS.Close(i);
                 }
             }
         }
-
         awakenProcesses(); // Awaken any processes that need to be before a new process is run.
         int priority;
         if((priority = decidePriority()) != -1 && !(processListsArray.get(priority).isEmpty())) {

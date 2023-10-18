@@ -6,11 +6,19 @@ public class KernelMessage {
     private int messageJob;
     private byte[] bytes;
 
+    public KernelMessage() {
+
+    }
+
     public KernelMessage(KernelMessage copyKernelMessage) {
         this.senderPID = copyKernelMessage.senderPID;
         this.targetPID = copyKernelMessage.targetPID;
         this.messageJob = copyKernelMessage.messageJob;
         this.bytes = copyKernelMessage.bytes;
+    }
+
+    public int incrementMessageJob() {
+        return messageJob++;
     }
 
     public int getSenderPID() {
