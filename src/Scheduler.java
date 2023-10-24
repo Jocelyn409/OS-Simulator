@@ -162,6 +162,9 @@ public class Scheduler {
             waitingProcesses.put(tempRunningProcess.getPID(), tempRunningProcess);
             switchProcess();
             tempRunningProcess.stop();
+            while(tempRunningProcess.messageQueueIsEmpty()) {
+                
+            }
         }
     }
 

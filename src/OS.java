@@ -1,4 +1,4 @@
-public class OS{
+public class OS {
     private static Kernel kernelInstance = null;
 
     public static void startup(UserlandProcess init, Priority.Level level) {
