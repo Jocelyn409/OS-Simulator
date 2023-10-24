@@ -21,7 +21,7 @@ public class KernelandProcess {
         this.level = level;
         processTimeoutCount = 0;
         indexArray = new int[] {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1}; // Length of 10.
-        processName = getClass().getName(); // not right???
+        messageQueue = new LinkedList<>();
     }
 
     // Suspend thread only if thread has already started.
@@ -72,7 +72,7 @@ public class KernelandProcess {
         messageQueue.add(message);
     }
 
-    public KernelMessage getFirstMessageOnQueue() {
+    public KernelMessage popFirstMessageOnQueue() {
         return messageQueue.pop();
     }
 

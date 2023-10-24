@@ -10,6 +10,8 @@ public class OS {
             createProcess(new RealTimeProcess(), Priority.Level.RealTime);
             createProcess(new InteractiveProcess(), Priority.Level.Interactive);
             createProcess(new BackgroundProcess(), Priority.Level.Background);
+            createProcess(new Ping(), Priority.Level.RealTime);
+            createProcess(new Pong(), Priority.Level.RealTime);
             createProcess(new TransferText());
         }
         else {

@@ -155,7 +155,7 @@ public class Scheduler {
     public KernelMessage waitForMessage() {
         var tempRunningProcess = runningProcess;
         if(!tempRunningProcess.messageQueueIsEmpty()) {
-            return tempRunningProcess.getFirstMessageOnQueue();
+            return tempRunningProcess.popFirstMessageOnQueue();
         }
         else { // idk if any of this is right tbh lol
             runningProcess = null;
@@ -163,8 +163,13 @@ public class Scheduler {
             switchProcess();
             tempRunningProcess.stop();
             while(tempRunningProcess.messageQueueIsEmpty()) {
-                
+                try {
+                    Thread.sleep(10);
+                } catch(InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
+            return tempRunningProcess.popFirstMessageOnQueue();
         }
     }
 
