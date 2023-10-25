@@ -21,6 +21,7 @@ public class KernelandProcess {
         this.level = level;
         processTimeoutCount = 0;
         indexArray = new int[] {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1}; // Length of 10.
+        processName = up.getClass().getSimpleName();
         messageQueue = new LinkedList<>();
     }
 

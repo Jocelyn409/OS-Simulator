@@ -34,10 +34,11 @@ public class VirtualFileSystem implements Device {
 
     @Override
     public void Close(int ID) {
-        try {
-            deviceMap[ID].getDevice().Close(deviceMap[ID].getID());
-            deviceMap[ID] = null;
-        } catch(ArrayIndexOutOfBoundsException ignore) { }
+        if(ID == -1) {
+            return;
+        }
+        deviceMap[ID].getDevice().Close(deviceMap[ID].getID());
+        deviceMap[ID] = null;
     }
 
     @Override

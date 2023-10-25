@@ -125,12 +125,10 @@ public class Scheduler {
     }
 
     public int getPidByName(String input) {
-        for(int i = 0; i <= 2; i++) {
-            for(int listIndex = 0; listIndex < processListsArray.get(i).size(); listIndex++) {
-                KernelandProcess temp = processListsArray.get(i).get(listIndex);
-                if(temp.getProcessName().equals(input)) {
-                    return temp.getPID();
-                }
+        for(Map.Entry<Integer, KernelandProcess> entry : messageTargets.entrySet()) {
+            KernelandProcess tempProcess = entry.getValue();
+            if(tempProcess.getProcessName().equals(input)) {
+                return tempProcess.getPID();
             }
         }
         return -1;
@@ -138,7 +136,9 @@ public class Scheduler {
 
     public void sendMessage(KernelMessage kernelMessage) {
         KernelMessage message = new KernelMessage(kernelMessage);
-        message.setSenderPID(runningProcess.getPID());
+        int tempPID = runningProcess.getPID();
+        kernelMessage.setSenderPID(tempPID);
+        message.setSenderPID(tempPID);
         KernelandProcess targetProcess;
         if((targetProcess = messageTargets.get(message.getTargetPID())) != null) {
             targetProcess.addToMessageQueue(message);
@@ -153,23 +153,24 @@ public class Scheduler {
     }
 
     public KernelMessage waitForMessage() {
-        var tempRunningProcess = runningProcess;
-        if(!tempRunningProcess.messageQueueIsEmpty()) {
-            return tempRunningProcess.popFirstMessageOnQueue();
+        if(!runningProcess.messageQueueIsEmpty()) {
+            return runningProcess.popFirstMessageOnQueue();
         }
-        else { // idk if any of this is right tbh lol
-            runningProcess = null;
+        else {
+            var tempRunningProcess = runningProcess;
             waitingProcesses.put(tempRunningProcess.getPID(), tempRunningProcess);
+            int tempPID = tempRunningProcess.getPID();
+            runningProcess = null;
             switchProcess();
             tempRunningProcess.stop();
-            while(tempRunningProcess.messageQueueIsEmpty()) {
+            while(messageTargets.get(tempPID).messageQueueIsEmpty()) {
                 try {
-                    Thread.sleep(10);
+                    
                 } catch(InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             }
-            return tempRunningProcess.popFirstMessageOnQueue();
+            return messageTargets.get(tempPID).popFirstMessageOnQueue();
         }
     }
 

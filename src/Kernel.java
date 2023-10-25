@@ -43,6 +43,9 @@ public class Kernel implements Device {
 
     @Override
     public void Close(int ID) {
+        if(runningProcess == null) {
+            return;
+        }
         VFS.Close(runningProcess.getVFSIndex(ID));
         runningProcess.resetIndexArray(ID);
     }

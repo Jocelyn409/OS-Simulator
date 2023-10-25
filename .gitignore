@@ -2,3 +2,5 @@
 *.class
 *.xml
 .idea/workspace.xml
+*.trc
+*.dmp
