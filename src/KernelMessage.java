@@ -56,7 +56,7 @@ public class KernelMessage {
     @Override
     public String toString() {
         return "KernelMessage:" +
-                "\nSenderPID: " + senderPID + ", TargetPID: " + targetPID +
+                "SenderPID: " + senderPID + ", TargetPID: " + targetPID +
                 ", MessageJob: " + messageJob + ", Bytes: " + Arrays.toString(bytes);
     }
 }

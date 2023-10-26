@@ -137,40 +137,47 @@ public class Scheduler {
     public void sendMessage(KernelMessage kernelMessage) {
         KernelMessage message = new KernelMessage(kernelMessage);
         int tempPID = runningProcess.getPID();
+
+        // Set and update senderPIDs for both messages.
         kernelMessage.setSenderPID(tempPID);
         message.setSenderPID(tempPID);
-        KernelandProcess targetProcess;
-        if((targetProcess = messageTargets.get(message.getTargetPID())) != null) {
-            targetProcess.addToMessageQueue(message);
 
-            // idk if this is right.
-            // his reasoning or explanation seems off.
-            if(targetProcess.messageQueueIsEmpty()) {
-                waitingProcesses.remove(targetProcess.getPID());
+        KernelandProcess targetProcess = messageTargets.get(message.getTargetPID());
+        if(targetProcess != null) {
+            // If targetProcess is in messageTargets (not null), add the message to its queue.
+            targetProcess.addToMessageQueue(message);
+            System.out.println("we have sent " + message);
+            tempPID = targetProcess.getPID();
+            if(waitingProcesses.get(tempPID) != null) {
+                // If waitingProcess contains the targetProcess, remove it from
+                // the HashMap and add it back to one of our priority queues.
+                waitingProcesses.remove(tempPID);
                 addProcess(targetProcess);
             }
         }
     }
 
     public KernelMessage waitForMessage() {
-        if(!runningProcess.messageQueueIsEmpty()) {
-            return runningProcess.popFirstMessageOnQueue();
+        var tempRunningProcess = runningProcess;
+        if(!tempRunningProcess.messageQueueIsEmpty()) {
+            return tempRunningProcess.popFirstMessageOnQueue();
         }
         else {
-            var tempRunningProcess = runningProcess;
-            waitingProcesses.put(tempRunningProcess.getPID(), tempRunningProcess);
             int tempPID = tempRunningProcess.getPID();
+
+            waitingProcesses.put(tempPID, tempRunningProcess);
+
+            // Stop and switch process.
             runningProcess = null;
             switchProcess();
             tempRunningProcess.stop();
-            while(messageTargets.get(tempPID).messageQueueIsEmpty()) {
-                try {
-                    
-                } catch(InterruptedException e) {
-                    throw new RuntimeException(e);
+
+            KernelandProcess targetProcess = waitingProcesses.get(tempPID);
+            while(true) {
+                if(!targetProcess.messageQueueIsEmpty()) {
+                    return targetProcess.popFirstMessageOnQueue();
                 }
             }
-            return messageTargets.get(tempPID).popFirstMessageOnQueue();
         }
     }
 

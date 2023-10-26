@@ -3,16 +3,18 @@ public class Ping extends UserlandProcess {
 
     public Ping() {
         message = new KernelMessage();
-        message.setMessageJob(0);
     }
 
     @Override
     public void run() {
-        message.setTargetPID(OS.getPidByName("Pong"));
-        OS.sendMessage(message);
-        System.out.println("Ping from PID " + message.getSenderPID() +
-                            " to PID " + message.getTargetPID() +
-                            " with " + message.getMessageJob());
-        OS.waitForMessage();
+        while(message.getMessageJob() < 10) {
+            message.setTargetPID(OS.getPidByName("Pong"));
+            OS.sendMessage(message);
+            System.out.println("Ping from PID " + message.getSenderPID() +
+                    " to PID " + message.getTargetPID() +
+                    " with " + message.getMessageJob());
+            message = OS.waitForMessage();
+            OS.sleep(100);
+        }
     }
 }
