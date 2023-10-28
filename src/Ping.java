@@ -7,7 +7,7 @@ public class Ping extends UserlandProcess {
 
     @Override
     public void run() {
-        while(message.getMessageJob() < 10) {
+        while(message.getMessageJob() < 100) {
             message.setTargetPID(OS.getPidByName("Pong"));
             OS.sendMessage(message);
             System.out.println("Ping from PID " + message.getSenderPID() +

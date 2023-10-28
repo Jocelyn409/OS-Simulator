@@ -17,10 +17,6 @@ public class KernelMessage {
         this.bytes = copyKernelMessage.bytes;
     }
 
-    public int incrementMessageJob() {
-        return messageJob++;
-    }
-
     public int getSenderPID() {
         return senderPID;
     }
@@ -55,7 +51,7 @@ public class KernelMessage {
 
     @Override
     public String toString() {
-        return "KernelMessage:" +
+        return "KernelMessage: " +
                 "SenderPID: " + senderPID + ", TargetPID: " + targetPID +
                 ", MessageJob: " + messageJob + ", Bytes: " + Arrays.toString(bytes);
     }

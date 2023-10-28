@@ -15,6 +15,7 @@ public class Scheduler {
     private Clock clock;
     private Random random;
 
+
     public Scheduler() {
         processListsArray = Collections.synchronizedList(new ArrayList<>());
         processListsArray.add(0, realTimeProcesses = Collections.synchronizedList(new ArrayList<>()));
@@ -101,7 +102,7 @@ public class Scheduler {
 
         switchProcess(); // Switch process since we need a new process to run.
         tempRunningProcess.stop(); // tempRunningProcess needs to be stopped after switchProcess().
-    }                                                                   
+    }
 
     // If createProcess() is called with no overload, call the overloaded method
     // with the level being Interactive as a default.
@@ -158,11 +159,11 @@ public class Scheduler {
     }
 
     public KernelMessage waitForMessage() {
-        var tempRunningProcess = runningProcess;
-        if(!tempRunningProcess.messageQueueIsEmpty()) {
-            return tempRunningProcess.popFirstMessageOnQueue();
+        if(!runningProcess.messageQueueIsEmpty()) {
+            return runningProcess.popFirstMessageOnQueue();
         }
         else {
+            var tempRunningProcess = runningProcess;
             int tempPID = tempRunningProcess.getPID();
 
             waitingProcesses.put(tempPID, tempRunningProcess);
@@ -171,11 +172,11 @@ public class Scheduler {
             runningProcess = null;
             switchProcess();
             tempRunningProcess.stop();
-            System.out.println(waitingProcesses);
-            KernelandProcess targetProcess = waitingProcesses.get(tempPID);
+
+            // Look for tempRunningProcess.
             while(true) {
-                if(!targetProcess.messageQueueIsEmpty()) {
-                    return targetProcess.popFirstMessageOnQueue();
+                if(!tempRunningProcess.messageQueueIsEmpty()) {
+                    return tempRunningProcess.popFirstMessageOnQueue();
                 }
             }
         }
