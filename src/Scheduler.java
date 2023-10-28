@@ -171,7 +171,7 @@ public class Scheduler {
             runningProcess = null;
             switchProcess();
             tempRunningProcess.stop();
-
+            System.out.println(waitingProcesses);
             KernelandProcess targetProcess = waitingProcesses.get(tempPID);
             while(true) {
                 if(!targetProcess.messageQueueIsEmpty()) {

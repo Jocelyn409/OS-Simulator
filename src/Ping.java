@@ -13,8 +13,8 @@ public class Ping extends UserlandProcess {
             System.out.println("Ping from PID " + message.getSenderPID() +
                     " to PID " + message.getTargetPID() +
                     " with " + message.getMessageJob());
-            message = OS.waitForMessage();
             OS.sleep(100);
+            message = OS.waitForMessage();
         }
     }
 }
