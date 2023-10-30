@@ -135,19 +135,20 @@ public class Scheduler {
         return -1;
     }
 
+    // Sends a message to runningProcess.
     public void sendMessage(KernelMessage kernelMessage) {
-        KernelMessage message = new KernelMessage(kernelMessage);
+        KernelMessage copyMessage = new KernelMessage(kernelMessage);
         int tempPID = runningProcess.getPID();
 
         // Set and update senderPIDs for both messages.
         kernelMessage.setSenderPID(tempPID);
-        message.setSenderPID(tempPID);
+        copyMessage.setSenderPID(tempPID);
 
-        KernelandProcess targetProcess = messageTargets.get(message.getTargetPID());
+        KernelandProcess targetProcess = messageTargets.get(copyMessage.getTargetPID());
         if(targetProcess != null) {
             // If targetProcess is in messageTargets (not null), add the message to its queue.
-            targetProcess.addToMessageQueue(message);
-            System.out.println("we have sent " + message);
+            targetProcess.addToMessageQueue(copyMessage);
+            System.out.println("We have sent " + copyMessage);
             tempPID = targetProcess.getPID();
             if(waitingProcesses.get(tempPID) != null) {
                 // If waitingProcess contains the targetProcess, remove it from
@@ -158,24 +159,27 @@ public class Scheduler {
         }
     }
 
+    // runningProcess waits for a message to arrive, then returns it.
     public KernelMessage waitForMessage() {
         if(!runningProcess.messageQueueIsEmpty()) {
+            // If runningProcess has a message, pop it and return it from its queue.
             return runningProcess.popFirstMessageOnQueue();
         }
         else {
             var tempRunningProcess = runningProcess;
             int tempPID = tempRunningProcess.getPID();
 
-            waitingProcesses.put(tempPID, tempRunningProcess);
+            waitingProcesses.put(tempPID, tempRunningProcess); // Add process to waitingProcesses.
 
             // Stop and switch process.
             runningProcess = null;
             switchProcess();
             tempRunningProcess.stop();
 
-            // Look for tempRunningProcess.
+            // Look for a message to arrive in tempRunningProcess's messageQueue.
             while(true) {
                 if(!tempRunningProcess.messageQueueIsEmpty()) {
+                    // If tempRunningProcess has a message, pop it and return it from its queue.
                     return tempRunningProcess.popFirstMessageOnQueue();
                 }
             }

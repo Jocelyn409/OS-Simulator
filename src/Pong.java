@@ -4,11 +4,15 @@ public class Pong extends UserlandProcess {
     @Override
     public void run() {
         do {
-            message = new KernelMessage(OS.waitForMessage());
+            message = new KernelMessage(OS.waitForMessage()); // Wait for message.
+
+            // Assign message variables; increment messageJob and set targetPID.
             int tempInt = message.getMessageJob();
             message.setMessageJob(++tempInt);
             message.setTargetPID(OS.getPidByName("Ping"));
-            OS.sendMessage(message);
+
+            OS.sendMessage(message); // Send message.
+
             System.out.println("Pong from PID " + message.getSenderPID() +
                     " to PID " + message.getTargetPID() +
                     " with " + message.getMessageJob());
