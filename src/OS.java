@@ -70,4 +70,22 @@ public class OS {
     public static KernelMessage waitForMessage() {
         return kernelInstance.waitForMessage();
     }
+
+    public static void getMapping(int virtualPageNumber) {
+        kernelInstance.getMapping(virtualPageNumber);
+    }
+
+    public static int allocateMemory(int size) {
+        if(size % 1024 != 0) {
+            return -1; // return failure???
+        }
+        return kernelInstance.allocateMemory(size); // is this right?
+    }
+
+    public static boolean freeMemory(int pointer, int size) {
+        if(pointer % 1024 != 0 && size % 1024 != 0) {
+            return false; // return failure???
+        }
+        return kernelInstance.freeMemory(pointer, size); // is this right?
+    }
 }

@@ -1,5 +1,12 @@
-import java.util.*;
 import java.time.Clock;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.Random;
+import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Map;
 
 public class Scheduler {
     private List<List<KernelandProcess>> processListsArray;
@@ -14,7 +21,6 @@ public class Scheduler {
     private TimerTask timerTask;
     private Clock clock;
     private Random random;
-
 
     public Scheduler() {
         processListsArray = Collections.synchronizedList(new ArrayList<>());
@@ -184,6 +190,14 @@ public class Scheduler {
                 }
             }
         }
+    }
+
+    public void getMapping(int virtualPageNumber) {
+
+    }
+
+    public boolean freeMemory(int pointer, int size) {
+        // reset memory of userlandprocess.
     }
 
     // Stop running process if there is one; add it to the end of the LL

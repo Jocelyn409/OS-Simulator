@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.LinkedList;
 
 @SuppressWarnings("all")
@@ -12,6 +13,7 @@ public class KernelandProcess {
     private int[] indexArray;
     private String processName;
     private LinkedList<KernelMessage> messageQueue;
+    private int[] physicalPages;
 
     public KernelandProcess(UserlandProcess up, Priority.Level level) {
         thread = new Thread(up);
@@ -23,6 +25,8 @@ public class KernelandProcess {
         indexArray = new int[] {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1}; // Length of 10.
         processName = up.getClass().getSimpleName();
         messageQueue = new LinkedList<>();
+        physicalPages = new int[100];
+        Arrays.fill(physicalPages, -1);
     }
 
     // Suspend thread only if thread has already started.

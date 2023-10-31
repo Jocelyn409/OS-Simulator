@@ -2,11 +2,13 @@ public class Kernel implements Device {
     private Scheduler scheduler;
     private VirtualFileSystem VFS;
     private KernelandProcess runningProcess;
+    private boolean[] pagesInUse;
 
     public Kernel() {
         scheduler = new Scheduler();
         VFS = new VirtualFileSystem();
         runningProcess = null;
+        pagesInUse = new boolean[1024]; // 1024 (number of pages) or 1048576 (memory's size), idk.
     }
 
     public void sleep(int milliseconds) {
@@ -79,5 +81,41 @@ public class Kernel implements Device {
 
     public KernelMessage waitForMessage() {
         return scheduler.waitForMessage();
+    }
+
+    public void getMapping(int virtualPageNumber) {
+        scheduler.getMapping(virtualPageNumber);
+    }
+
+    public int allocateMemory(int size) {
+        // "finds number of pages to add"...?
+        boolean foundSpace = true;
+        // Would we be using inUseIndex += size, or just inUseIndex++?
+        for(int inUseIndex = 0; inUseIndex < pagesInUse.length; inUseIndex++) {
+            for(int i = inUseIndex; i < inUseIndex + size; i++) {
+                if(pagesInUse[inUseIndex]) {
+                    foundSpace = false;
+                    break;
+                }
+            }
+            if(foundSpace) {
+                // If we find the space to allocate memory, mark the pages as in use.
+                for(int i = inUseIndex; i < inUseIndex + size; i++) {
+                    pagesInUse[inUseIndex] = true;
+                }
+                // "returns correct value"?
+                return 0;
+            }
+            foundSpace = true;
+        }
+        return 1;
+    }
+
+    public boolean freeMemory(int pointer, int size) {
+        for(int p = pointer; p < size; p++) {
+            pagesInUse[p] = false;
+        }
+        // removes mappings?
+        return scheduler.freeMemory(pointer, size); // ??? idk???
     }
 }
