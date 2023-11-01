@@ -198,6 +198,7 @@ public class Scheduler {
 
     public boolean freeMemory(int pointer, int size) {
         // reset memory of userlandprocess.
+        runningProcess.
     }
 
     // Stop running process if there is one; add it to the end of the LL
