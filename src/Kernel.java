@@ -103,6 +103,7 @@ public class Kernel implements Device {
                 for(int i = inUseIndex; i < inUseIndex + size; i++) {
                     pagesInUse[inUseIndex] = true;
                 }
+                scheduler.getRunningProcess().getPhysicalPages();
                 // "returns correct value"?
                 return 0;
             }

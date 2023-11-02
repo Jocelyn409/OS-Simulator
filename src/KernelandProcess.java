@@ -124,4 +124,12 @@ public class KernelandProcess {
     public LinkedList<KernelMessage> getMessageQueue() {
         return messageQueue;
     }
+
+    public int[] getPhysicalPages() {
+        return physicalPages;
+    }
+
+    public void setPhysicalPages(int[] physicalPages) {
+        this.physicalPages = physicalPages;
+    }
 }

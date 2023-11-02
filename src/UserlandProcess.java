@@ -1,14 +1,14 @@
 public abstract class UserlandProcess implements Runnable {
 
-    private static byte[] memory;
-    private static int[][] translationLookasideBuffer;
+    public static byte[] memory;
+    public static int[][] translationLookasideBuffer;
 
     public UserlandProcess() {
-        memory = new byte[1048576];
-        translationLookasideBuffer = new int[][]{}; // Virtual address -> Physical address.
+        memory = new byte[1048576]; // 1 MB.
+        translationLookasideBuffer = new int[][]{{0, 0}, {0, 0}}; // Virtual address -> Physical address.
     }
 
-    public byte read(int address) {
+    public byte readMemory(int address) {
         int virtualPage = address / 1024;
         int pageOffset = address % 1024;
         int physicalAddress = translationLookasideBuffer[virtualPage][pageOffset] * 1024 + pageOffset;
@@ -21,7 +21,7 @@ public abstract class UserlandProcess implements Runnable {
         }
     }
 
-    public void write(int address, byte value) {
+    public void writeMemory(int address, byte value) {
         int virtualPage = address / 1024;
         int pageOffset = address % 1024;
         int physicalAddress = translationLookasideBuffer[virtualPage][pageOffset] * 1024 + pageOffset;
@@ -39,11 +39,4 @@ public abstract class UserlandProcess implements Runnable {
 
     }
 
-    public static byte[] getMemory() {
-        return memory;
-    }
-
-    public static void setMemory(byte[] memory) {
-        UserlandProcess.memory = memory;
-    }
 }

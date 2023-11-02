@@ -193,12 +193,15 @@ public class Scheduler {
     }
 
     public void getMapping(int virtualPageNumber) {
+        // update one of two tlb entries randomly... so probably dont need to while loop in read and write in ulp
 
     }
 
-    public boolean freeMemory(int pointer, int size) {
-        // reset memory of userlandprocess.
-        runningProcess.
+    public boolean freeMemory(int pointer, int size) {// reset memory of userlandprocess.
+        for(int i = pointer; i < pointer + size; i++) {
+            UserlandProcess.memory[i] = '\0';
+        }
+        return true; // idk
     }
 
     // Stop running process if there is one; add it to the end of the LL
@@ -210,6 +213,8 @@ public class Scheduler {
                 addProcess(runningProcess);
             }
             else {
+                // look up memory in
+
                 // Since process is done, remove it from messageTargets and close all its devices.
                 messageTargets.remove(runningProcess.getPID());
                 for(int i = 0; i < 10; i++) {
