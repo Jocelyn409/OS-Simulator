@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public abstract class UserlandProcess implements Runnable {
 
     public static byte[] memory;
@@ -8,29 +10,31 @@ public abstract class UserlandProcess implements Runnable {
         translationLookasideBuffer = new int[][] {{0, 0}, {0, 0}}; // Virtual address -> Physical address.
     }
 
-    public byte readMemory(int address) {
-        int virtualPage = address / 1024;
-        int pageOffset = address % 1024;
-        int physicalAddress = translationLookasideBuffer[virtualPage][pageOffset] * 1024 + pageOffset;
+    public byte readMemory(int virtualAddress) {
+        int virtualPageNumber = virtualAddress / 1024;
+        int pageOffset = virtualAddress % 1024;
 
         while(true) {
-            if(physicalAddress != pageOffset) { // idk how to tell if map is in TLB
+            if(translationLookasideBuffer[virtualPageNumber][pageOffset] != 0) {
+                int physicalAddress = translationLookasideBuffer[virtualPageNumber][pageOffset] * 1024 + pageOffset;
                 return memory[physicalAddress];
             }
-            OS.getMapping(virtualPage);
+            OS.getMapping(virtualPageNumber);
         }
     }
 
-    public void writeMemory(int address, byte value) {
-        int virtualPage = address / 1024;
-        int pageOffset = address % 1024;
-        int physicalAddress = translationLookasideBuffer[virtualPage][pageOffset] * 1024 + pageOffset;
+    public void writeMemory(int virtualAddress, byte value) {
+        int virtualPageNumber = virtualAddress / 1024;
+        int pageOffset = virtualAddress % 1024;
 
         while(true) {
-            if(physicalAddress != pageOffset) { // idk how to tell if map is in TLB
+            if(translationLookasideBuffer[virtualPageNumber][pageOffset] != 0) {
+                int physicalAddress = translationLookasideBuffer[virtualPageNumber][pageOffset] * 1024 + pageOffset;
                 memory[physicalAddress] = value;
+                System.out.println("Wrote to memory: " + Arrays.toString(memory));
+                return;
             }
-            OS.getMapping(virtualPage);
+            OS.getMapping(virtualPageNumber);
         }
     }
 

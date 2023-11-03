@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class Kernel implements Device {
     private Scheduler scheduler;
     private VirtualFileSystem VFS;
@@ -108,9 +110,13 @@ public class Kernel implements Device {
                     pagesInUse[i] = true;
                     // assign them to the process' array?
                 }
+                System.out.println("Memory allocated: \n" + Arrays.toString(pagesInUse));
                 return 0; // "returns correct value"?
             }
-            foundSpace = true;
+            else {
+                foundSpace = true;
+                System.out.println("Memory not allocated.");
+            }
         }
         return 1;
     }

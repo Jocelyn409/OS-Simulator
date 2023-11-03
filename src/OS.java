@@ -1,3 +1,5 @@
+import java.util.Random;
+
 public class OS {
     private static Kernel kernelInstance = null;
 
@@ -7,12 +9,20 @@ public class OS {
             kernelInstance.createProcess(init, level);
             createProcess(new IAmTheWorld());
             createProcess(new GoodbyeWorld(), Priority.Level.Background);
+
+            Random rd = new Random();
+            byte[] arr = new byte[7];
+            rd.nextBytes(arr);
+
+            allocateMemory(2048);
+            /writeMemory(1024, arr[4]);
+
             createProcess(new RealTimeProcess(), Priority.Level.RealTime);
             createProcess(new InteractiveProcess(), Priority.Level.Interactive);
             createProcess(new BackgroundProcess(), Priority.Level.Background);
+            createProcess(new TransferText());
             createProcess(new Ping(), Priority.Level.RealTime);
             createProcess(new Pong(), Priority.Level.RealTime);
-            createProcess(new TransferText());
         }
         else {
             throw new RuntimeException("Startup already initiated.");
