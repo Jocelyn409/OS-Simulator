@@ -5,7 +5,7 @@ public abstract class UserlandProcess implements Runnable {
 
     public UserlandProcess() {
         memory = new byte[1048576]; // 1 MB.
-        translationLookasideBuffer = new int[][]{{0, 0}, {0, 0}}; // Virtual address -> Physical address.
+        translationLookasideBuffer = new int[][] {{0, 0}, {0, 0}}; // Virtual address -> Physical address.
     }
 
     public byte readMemory(int address) {
@@ -32,6 +32,14 @@ public abstract class UserlandProcess implements Runnable {
             }
             OS.getMapping(virtualPage);
         }
+    }
+
+    public static void clearTLB() {
+        translationLookasideBuffer = new int[][]{{0, 0}, {0, 0}};
+    }
+
+    public static void clearMemory() {
+        memory = new byte[1048576];
     }
 
     @Override

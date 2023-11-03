@@ -193,15 +193,12 @@ public class Scheduler {
     }
 
     public void getMapping(int virtualPageNumber) {
-        // update one of two tlb entries randomly... so probably dont need to while loop in read and write in ulp
+        // update one of two tlb entries randomly... so probably don't need to while loop in read and write in ulp
 
     }
 
-    public boolean freeMemory(int pointer, int size) {// reset memory of userlandprocess.
-        for(int i = pointer; i < pointer + size; i++) {
-            UserlandProcess.memory[i] = '\0';
-        }
-        return true; // idk
+    public boolean freeMemory(int pointer, int size) {
+        return runningProcess.freeMemory(pointer, size); // idfk??????
     }
 
     // Stop running process if there is one; add it to the end of the LL
@@ -211,15 +208,15 @@ public class Scheduler {
             if(!(runningProcess.isDone())) {
                 // If runningProcess is not null and the process did not finish, add it back to the end of the LL.
                 addProcess(runningProcess);
+                UserlandProcess.clearTLB();
             }
             else {
-                // look up memory in
-
-                // Since process is done, remove it from messageTargets and close all its devices.
-                messageTargets.remove(runningProcess.getPID());
+                // Since process is done:
+                messageTargets.remove(runningProcess.getPID()); // Remove it from messageTargets.
                 for(int i = 0; i < 10; i++) {
-                    OS.Close(i);
+                    OS.Close(i); // Close all its devices.
                 }
+                UserlandProcess.clearMemory(); // Clear its memory.
             }
         }
         awakenProcesses(); // Awaken any processes that need to be before a new process is run.

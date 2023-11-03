@@ -88,24 +88,27 @@ public class Kernel implements Device {
     }
 
     public int allocateMemory(int size) {
-        // "finds number of pages to add"...?
+        int pagesToAdd = size/1024;
         boolean foundSpace = true;
-        // Would we be using inUseIndex += size, or just inUseIndex++?
+
         for(int inUseIndex = 0; inUseIndex < pagesInUse.length; inUseIndex++) {
-            for(int i = inUseIndex; i < inUseIndex + size; i++) {
+            // Looks through current segment in pages to see if gap is wide enough to allocate.
+            for(int i = inUseIndex; i < inUseIndex + pagesToAdd; i++) {
                 if(pagesInUse[inUseIndex]) {
+                    // If any one of these pages is in use, break out of the loop
+                    // and indicate that no space was found to allocate.
                     foundSpace = false;
                     break;
                 }
             }
             if(foundSpace) {
                 // If we find the space to allocate memory, mark the pages as in use.
-                for(int i = inUseIndex; i < inUseIndex + size; i++) {
-                    pagesInUse[inUseIndex] = true;
+                int[] pages = scheduler.getRunningProcess().getPhysicalPages();
+                for(int i = inUseIndex; i < inUseIndex + pagesToAdd; i++) {
+                    pagesInUse[i] = true;
+                    // assign them to the process' array?
                 }
-                scheduler.getRunningProcess().getPhysicalPages();
-                // "returns correct value"?
-                return 0;
+                return 0; // "returns correct value"?
             }
             foundSpace = true;
         }
@@ -114,9 +117,8 @@ public class Kernel implements Device {
 
     public boolean freeMemory(int pointer, int size) {
         for(int p = pointer; p < size; p++) {
-            pagesInUse[p] = false;
+            pagesInUse[p] = false; // removes mappings??? idk???
         }
-        // removes mappings?
-        return scheduler.freeMemory(pointer, size); // ??? idk???
+        return scheduler.freeMemory(pointer, size);
     }
 }

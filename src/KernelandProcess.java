@@ -52,6 +52,13 @@ public class KernelandProcess {
         }
     }
 
+    public boolean freeMemory(int pointer, int size) {
+        for(int i = pointer; i < pointer + size; i++) {
+            physicalPages[i] = -1;
+        }
+        return true;
+    }
+
     // Check if the process needs to be demoted. processTimeoutCount is incremented,
     // then if it's 5, demote the process, and reset the count.
     public void checkProcessDemotion() {
