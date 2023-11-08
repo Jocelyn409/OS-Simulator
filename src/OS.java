@@ -8,14 +8,15 @@ public class OS {
             kernelInstance = new Kernel();
             kernelInstance.createProcess(init, level);
             createProcess(new IAmTheWorld());
-            createProcess(new GoodbyeWorld(), Priority.Level.Background);
+            var test = new GoodbyeWorld();
+            createProcess(test, Priority.Level.Background);
 
             Random rd = new Random();
             byte[] arr = new byte[7];
             rd.nextBytes(arr);
 
             allocateMemory(2048);
-            /writeMemory(1024, arr[4]);
+            test.writeMemory(1024, arr[4]);
 
             createProcess(new RealTimeProcess(), Priority.Level.RealTime);
             createProcess(new InteractiveProcess(), Priority.Level.Interactive);

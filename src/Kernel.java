@@ -105,7 +105,7 @@ public class Kernel implements Device {
             }
             if(foundSpace) {
                 // If we find the space to allocate memory, mark the pages as in use.
-                int[] pages = scheduler.getRunningProcess().getPhysicalPages();
+                //int[] pages = scheduler.getRunningProcess().getPhysicalPages();
                 for(int i = inUseIndex; i < inUseIndex + pagesToAdd; i++) {
                     pagesInUse[i] = true;
                     // assign them to the process' array?

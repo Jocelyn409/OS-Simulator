@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class HelloWorld extends UserlandProcess {
     @Override
     public void run() {

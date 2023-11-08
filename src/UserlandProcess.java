@@ -27,15 +27,13 @@ public abstract class UserlandProcess implements Runnable {
         int virtualPageNumber = virtualAddress / 1024;
         int pageOffset = virtualAddress % 1024;
 
-        while(true) {
-            if(translationLookasideBuffer[virtualPageNumber][pageOffset] != 0) {
-                int physicalAddress = translationLookasideBuffer[virtualPageNumber][pageOffset] * 1024 + pageOffset;
-                memory[physicalAddress] = value;
-                System.out.println("Wrote to memory: " + Arrays.toString(memory));
-                return;
-            }
-            OS.getMapping(virtualPageNumber);
+        if(translationLookasideBuffer[virtualPageNumber][pageOffset] != 0) {
+            int physicalAddress = translationLookasideBuffer[virtualPageNumber][pageOffset] * 1024 + pageOffset;
+            memory[physicalAddress] = value;
+            System.out.println("Wrote " + memory[physicalAddress] + " to memory.");
+            return;
         }
+        OS.getMapping(virtualPageNumber);
     }
 
     public static void clearTLB() {
