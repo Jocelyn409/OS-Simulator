@@ -115,9 +115,9 @@ public class Kernel implements Device {
             }
             else {
                 foundSpace = true;
-                System.out.println("Memory not allocated.");
             }
         }
+        System.out.println("Memory not allocated.");
         return 1;
     }
 

@@ -8,16 +8,8 @@ public class OS {
             kernelInstance = new Kernel();
             kernelInstance.createProcess(init, level);
             createProcess(new IAmTheWorld());
-            var test = new GoodbyeWorld();
-            createProcess(test, Priority.Level.Background);
-
-            Random rd = new Random();
-            byte[] arr = new byte[7];
-            rd.nextBytes(arr);
-
-            allocateMemory(2048);
-            test.writeMemory(1024, arr[4]);
-
+            createProcess(new GoodbyeWorld(), Priority.Level.Background);
+            createProcess(new MemoryTesting());
             createProcess(new RealTimeProcess(), Priority.Level.RealTime);
             createProcess(new InteractiveProcess(), Priority.Level.Interactive);
             createProcess(new BackgroundProcess(), Priority.Level.Background);
@@ -88,15 +80,15 @@ public class OS {
 
     public static int allocateMemory(int size) {
         if(size % 1024 != 0) {
-            return -1; // return failure???
+            return -1;
         }
-        return kernelInstance.allocateMemory(size); // is this right?
+        return kernelInstance.allocateMemory(size);
     }
 
     public static boolean freeMemory(int pointer, int size) {
         if(pointer % 1024 != 0 && size % 1024 != 0) {
-            return false; // return failure???
+            return false;
         }
-        return kernelInstance.freeMemory(pointer, size); // is this right?
+        return kernelInstance.freeMemory(pointer, size);
     }
 }

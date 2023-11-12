@@ -1,5 +1,3 @@
-import java.util.Arrays;
-
 public abstract class UserlandProcess implements Runnable {
 
     public static byte[] memory;
@@ -14,13 +12,12 @@ public abstract class UserlandProcess implements Runnable {
         int virtualPageNumber = virtualAddress / 1024;
         int pageOffset = virtualAddress % 1024;
 
-        while(true) {
-            if(translationLookasideBuffer[virtualPageNumber][pageOffset] != 0) {
-                int physicalAddress = translationLookasideBuffer[virtualPageNumber][pageOffset] * 1024 + pageOffset;
-                return memory[physicalAddress];
-            }
-            OS.getMapping(virtualPageNumber);
+        if(translationLookasideBuffer[virtualPageNumber][pageOffset] != 0) {
+            int physicalAddress = translationLookasideBuffer[virtualPageNumber][pageOffset] * 1024 + pageOffset;
+            System.out.println("Read " + memory[physicalAddress] + " from memory.");
+            return memory[physicalAddress];
         }
+        OS.getMapping(virtualPageNumber);
     }
 
     public void writeMemory(int virtualAddress, byte value) {
@@ -38,10 +35,6 @@ public abstract class UserlandProcess implements Runnable {
 
     public static void clearTLB() {
         translationLookasideBuffer = new int[][]{{0, 0}, {0, 0}};
-    }
-
-    public static void clearMemory() {
-        memory = new byte[1048576];
     }
 
     @Override
