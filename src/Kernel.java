@@ -92,11 +92,13 @@ public class Kernel implements Device {
     public int allocateMemory(int size) {
         int pagesToAdd = size/1024;
         boolean foundSpace = true;
+        KernelandProcess tempRunningProcess = scheduler.getRunningProcess();
+        int[] runningProcessPages = tempRunningProcess.getPhysicalPages();
 
-        for(int inUseIndex = 0; inUseIndex < pagesInUse.length; inUseIndex++) {
-            // Looks through current segment in pages to see if gap is wide enough to allocate.
-            for(int i = inUseIndex; i < inUseIndex + pagesToAdd; i++) {
-                if(pagesInUse[inUseIndex]) {
+        for(int processPagesInUseIndex = 0; processPagesInUseIndex < runningProcessPages.length; processPagesInUseIndex++) {
+            // Looks through current segment in the runningProcess's pages to see if gap is wide enough to allocate.
+            for(int i = processPagesInUseIndex; i < processPagesInUseIndex + pagesToAdd; i++) {
+                if(runningProcessPages[processPagesInUseIndex] != -1) {
                     // If any one of these pages is in use, break out of the loop
                     // and indicate that no space was found to allocate.
                     foundSpace = false;
@@ -105,26 +107,46 @@ public class Kernel implements Device {
             }
             if(foundSpace) {
                 // If we find the space to allocate memory, mark the pages as in use.
-                //int[] pages = scheduler.getRunningProcess().getPhysicalPages();
-                for(int i = inUseIndex; i < inUseIndex + pagesToAdd; i++) {
-                    pagesInUse[i] = true;
-                    // assign them to the process' array?
+                int inUseIndex = 0;
+                for(int i = processPagesInUseIndex; i < processPagesInUseIndex + pagesToAdd; i++) {
+                    while(inUseIndex < pagesInUse.length) {
+                        if(runningProcessPages[i] == -1) {
+                            runningProcessPages[i] = inUseIndex; // Map physical to virtual.
+                            pagesInUse[inUseIndex] = true;
+                            inUseIndex++;
+                            break;
+                        }
+                        inUseIndex++;
+                    }
                 }
+                tempRunningProcess.setPhysicalPages(runningProcessPages);
                 System.out.println("Memory allocated: \n" + Arrays.toString(pagesInUse));
-                return 0; // "returns correct value"?
+                System.out.println("Memory allocated: \n" + Arrays.toString(runningProcessPages));
+                return processPagesInUseIndex;
             }
             else {
                 foundSpace = true;
             }
         }
         System.out.println("Memory not allocated.");
-        return 1;
+        return -1;
     }
 
     public boolean freeMemory(int pointer, int size) {
-        for(int p = pointer; p < size; p++) {
-            pagesInUse[p] = false; // removes mappings??? idk???
+        KernelandProcess tempRunningProcess = runningProcess;
+        int[] runningProcessPages = tempRunningProcess.getPhysicalPages();
+
+        for(int inUseIndex = pointer; inUseIndex < pointer + size; inUseIndex++) {
+            // This for loop removes the mapping from the process's pages.
+            for(int i = 0; i < runningProcessPages.length; i++) {
+                if(runningProcessPages[i] == inUseIndex) {
+                    runningProcessPages[i] = -1;
+                    break;
+                }
+            }
+            pagesInUse[inUseIndex] = false; // Mark the virtual page as no longer in use.
         }
-        return scheduler.freeMemory(pointer, size);
+        tempRunningProcess.setPhysicalPages(runningProcessPages);
+        return true;
     }
 }

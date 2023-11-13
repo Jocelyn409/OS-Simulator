@@ -193,12 +193,16 @@ public class Scheduler {
     }
 
     public void getMapping(int virtualPageNumber) {
-        // update one of two tlb entries randomly... so probably don't need to while loop in read and write in ulp
+        KernelandProcess tempRunningProcess = runningProcess;
 
-    }
-
-    public boolean freeMemory(int pointer, int size) {
-        return runningProcess.freeMemory(pointer, size); // idfk??????
+        int physicalPage;
+        if((physicalPage = tempRunningProcess.getPhysicalPages()[virtualPageNumber]) == -1) {
+            throw new RuntimeException("Segmentation Fault");
+        }
+        Random random = new Random();
+        int randomInt = random.nextInt(2);
+        UserlandProcess.translationLookasideBuffer[randomInt][0] = virtualPageNumber;
+        UserlandProcess.translationLookasideBuffer[randomInt][1] = physicalPage;
     }
 
     // Stop running process if there is one; add it to the end of the LL
@@ -216,7 +220,6 @@ public class Scheduler {
                 for(int i = 0; i < 10; i++) {
                     OS.Close(i); // Close all its devices.
                 }
-                UserlandProcess.clearMemory(); // Clear its memory.
             }
         }
         awakenProcesses(); // Awaken any processes that need to be before a new process is run.

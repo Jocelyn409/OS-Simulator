@@ -1,5 +1,3 @@
-import java.util.Random;
-
 public class OS {
     private static Kernel kernelInstance = null;
 
@@ -10,6 +8,7 @@ public class OS {
             createProcess(new IAmTheWorld());
             createProcess(new GoodbyeWorld(), Priority.Level.Background);
             createProcess(new MemoryTesting());
+            //createProcess(new MemoryTesting2());
             createProcess(new RealTimeProcess(), Priority.Level.RealTime);
             createProcess(new InteractiveProcess(), Priority.Level.Interactive);
             createProcess(new BackgroundProcess(), Priority.Level.Background);
