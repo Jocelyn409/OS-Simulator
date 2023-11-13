@@ -85,15 +85,15 @@ public class Kernel implements Device {
         return scheduler.waitForMessage();
     }
 
-    public void getMapping(int virtualPageNumber) {
+    public void getMapping(int virtualPageNumber) throws Exception {
         scheduler.getMapping(virtualPageNumber);
     }
 
     public int allocateMemory(int size) {
         int pagesToAdd = size/1024;
         boolean foundSpace = true;
-        KernelandProcess tempRunningProcess = scheduler.getRunningProcess();
-        int[] runningProcessPages = tempRunningProcess.getPhysicalPages();
+        runningProcess = scheduler.getRunningProcess();
+        int[] runningProcessPages = runningProcess.getPhysicalPages();
 
         for(int processPagesInUseIndex = 0; processPagesInUseIndex < runningProcessPages.length; processPagesInUseIndex++) {
             // Looks through current segment in the runningProcess's pages to see if gap is wide enough to allocate.
@@ -119,7 +119,7 @@ public class Kernel implements Device {
                         inUseIndex++;
                     }
                 }
-                tempRunningProcess.setPhysicalPages(runningProcessPages);
+                runningProcess.setPhysicalPages(runningProcessPages);
                 System.out.println("Memory allocated: \n" + Arrays.toString(pagesInUse));
                 System.out.println("Memory allocated: \n" + Arrays.toString(runningProcessPages));
                 return processPagesInUseIndex;
@@ -132,21 +132,32 @@ public class Kernel implements Device {
         return -1;
     }
 
-    public boolean freeMemory(int pointer, int size) {
-        KernelandProcess tempRunningProcess = runningProcess;
-        int[] runningProcessPages = tempRunningProcess.getPhysicalPages();
+    public boolean freeMemory(int pointer, int size) throws Exception {
+        int pagePointer = pointer/1024;
+        int pagesToRemove = size/1024;
+        runningProcess = scheduler.getRunningProcess();
+        int[] runningProcessPages = runningProcess.getPhysicalPages();
 
-        for(int inUseIndex = pointer; inUseIndex < pointer + size; inUseIndex++) {
-            // This for loop removes the mapping from the process's pages.
+        System.out.println("pagesInUse before freeing:    " + Arrays.toString(pagesInUse)
+                + "\nphysicalPages before freeing: " + Arrays.toString(runningProcessPages));
+
+        for(int inUseIndex = pagePointer; inUseIndex < pagePointer + pagesToRemove; inUseIndex++) {
+            if(!pagesInUse[inUseIndex]) {
+                throw new Exception("Couldn't free memory since it's already free.");
+            }
+            pagesInUse[inUseIndex] = false; // Mark the virtual page as no longer in use.
             for(int i = 0; i < runningProcessPages.length; i++) {
+                // This for loop removes the mapping from the process's pages by finding
+                // any spots in the runningProcessPages that are the same as the inUseIndex
                 if(runningProcessPages[i] == inUseIndex) {
                     runningProcessPages[i] = -1;
                     break;
                 }
             }
-            pagesInUse[inUseIndex] = false; // Mark the virtual page as no longer in use.
         }
-        tempRunningProcess.setPhysicalPages(runningProcessPages);
+        runningProcess.setPhysicalPages(runningProcessPages);
+        System.out.println("pagesInUse after freeing:     " + Arrays.toString(pagesInUse)
+                + "\nphysicalPages after freeing:  " + Arrays.toString(runningProcessPages));
         return true;
     }
 }

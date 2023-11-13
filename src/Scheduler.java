@@ -192,13 +192,13 @@ public class Scheduler {
         }
     }
 
-    public void getMapping(int virtualPageNumber) {
+    public synchronized void getMapping(int virtualPageNumber) throws Exception {
         KernelandProcess tempRunningProcess = runningProcess;
-
         int physicalPage;
         if((physicalPage = tempRunningProcess.getPhysicalPages()[virtualPageNumber]) == -1) {
-            throw new RuntimeException("Segmentation Fault");
+            throw new Exception("Segmentation Fault");
         }
+
         Random random = new Random();
         int randomInt = random.nextInt(2);
         UserlandProcess.translationLookasideBuffer[randomInt][0] = virtualPageNumber;
@@ -212,7 +212,7 @@ public class Scheduler {
             if(!(runningProcess.isDone())) {
                 // If runningProcess is not null and the process did not finish, add it back to the end of the LL.
                 addProcess(runningProcess);
-                UserlandProcess.clearTLB();
+
             }
             else {
                 // Since process is done:
@@ -221,6 +221,7 @@ public class Scheduler {
                     OS.Close(i); // Close all its devices.
                 }
             }
+            UserlandProcess.clearTLB();
         }
         awakenProcesses(); // Awaken any processes that need to be before a new process is run.
         int priority;

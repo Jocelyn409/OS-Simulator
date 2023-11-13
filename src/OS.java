@@ -8,7 +8,7 @@ public class OS {
             createProcess(new IAmTheWorld());
             createProcess(new GoodbyeWorld(), Priority.Level.Background);
             createProcess(new MemoryTesting());
-            //createProcess(new MemoryTesting2());
+            createProcess(new MemoryTesting2());
             createProcess(new RealTimeProcess(), Priority.Level.RealTime);
             createProcess(new InteractiveProcess(), Priority.Level.Interactive);
             createProcess(new BackgroundProcess(), Priority.Level.Background);
@@ -73,7 +73,7 @@ public class OS {
         return kernelInstance.waitForMessage();
     }
 
-    public static void getMapping(int virtualPageNumber) {
+    public static void getMapping(int virtualPageNumber) throws Exception {
         kernelInstance.getMapping(virtualPageNumber);
     }
 
@@ -84,7 +84,7 @@ public class OS {
         return kernelInstance.allocateMemory(size);
     }
 
-    public static boolean freeMemory(int pointer, int size) {
+    public static boolean freeMemory(int pointer, int size) throws Exception {
         if(pointer % 1024 != 0 && size % 1024 != 0) {
             return false;
         }

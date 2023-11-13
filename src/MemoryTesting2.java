@@ -7,13 +7,23 @@ public class MemoryTesting2 extends UserlandProcess {
         byte[] byteValue = new byte[2];
         randomBytes.nextBytes(byteValue);
 
-        OS.allocateMemory(2048);
-        writeMemory(1024, byteValue[0]);
-        readMemory(1024);
+        try {
+            writeMemory(4096, byteValue[0]); // Will cause a seg fault.
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        try {
+            OS.freeMemory(4096, 1024);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
 
-
-        writeMemory(3072, byteValue[1]);
-
-        OS.freeMemory(1024, 1024);
+        // This will cause a seg fault. This is to prove that the memory
+        // written in MemoryTesting won't transfer over and be read over here.
+        try {
+            readMemory(2048);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 }
