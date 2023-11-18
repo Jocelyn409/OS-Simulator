@@ -13,7 +13,7 @@ public class KernelandProcess {
     private int[] indexArray;
     private String processName;
     private LinkedList<KernelMessage> messageQueue;
-    private int[] physicalPages;
+    private VirtualToPhysicalMapping[] physicalPages;
 
     public KernelandProcess(UserlandProcess up, Priority.Level level) {
         thread = new Thread(up);
@@ -25,7 +25,7 @@ public class KernelandProcess {
         indexArray = new int[] {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1}; // Length of 10.
         processName = up.getClass().getSimpleName();
         messageQueue = new LinkedList<>();
-        physicalPages = new int[100];
+        physicalPages = new VirtualToPhysicalMapping[100];
         Arrays.fill(physicalPages, -1);
     }
 
@@ -54,14 +54,14 @@ public class KernelandProcess {
 
     public boolean freeMemory(int pointer, int size) {
         for(int i = pointer; i < pointer + size; i++) {
-            physicalPages[i] = -1;
+            physicalPages[i] = new VirtualToPhysicalMapping();
         }
         return true;
     }
 
     public void clearPhysicalPages(int start, int end) {
         for(int i = start; i < end; i++) {
-            physicalPages[i] = -1;
+            physicalPages[i] = new VirtualToPhysicalMapping();
         }
     }
 
@@ -138,11 +138,11 @@ public class KernelandProcess {
         return messageQueue;
     }
 
-    public int[] getPhysicalPages() {
+    public VirtualToPhysicalMapping[] getPhysicalPages() {
         return physicalPages;
     }
 
-    public void setPhysicalPages(int[] physicalPages) {
+    public void setPhysicalPages(VirtualToPhysicalMapping[] physicalPages) {
         this.physicalPages = physicalPages;
     }
 }

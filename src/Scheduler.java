@@ -195,7 +195,7 @@ public class Scheduler {
     public synchronized void getMapping(int virtualPageNumber) throws Exception {
         KernelandProcess tempRunningProcess = runningProcess;
         int physicalPage;
-        if((physicalPage = tempRunningProcess.getPhysicalPages()[virtualPageNumber]) == -1) {
+        if((physicalPage = tempRunningProcess.getPhysicalPages()[virtualPageNumber].getPhysicalPageNumber()) == -1) {
             throw new Exception("Segmentation Fault");
         }
 
@@ -203,6 +203,10 @@ public class Scheduler {
         int randomInt = random.nextInt(2);
         UserlandProcess.translationLookasideBuffer[randomInt][0] = virtualPageNumber;
         UserlandProcess.translationLookasideBuffer[randomInt][1] = physicalPage;
+    }
+
+    public KernelandProcess getRandomProcess() {
+        
     }
 
     // Stop running process if there is one; add it to the end of the LL

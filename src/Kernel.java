@@ -93,12 +93,12 @@ public class Kernel implements Device {
         int pagesToAdd = size/1024;
         boolean foundSpace = true;
         runningProcess = scheduler.getRunningProcess();
-        int[] runningProcessPages = runningProcess.getPhysicalPages();
+        VirtualToPhysicalMapping[] runningProcessPages = runningProcess.getPhysicalPages();
 
         for(int processPagesInUseIndex = 0; processPagesInUseIndex < runningProcessPages.length; processPagesInUseIndex++) {
             // Looks through current segment in the runningProcess's pages to see if gap is wide enough to allocate.
             for(int i = processPagesInUseIndex; i < processPagesInUseIndex + pagesToAdd; i++) {
-                if(runningProcessPages[processPagesInUseIndex] != -1) {
+                if(runningProcessPages[processPagesInUseIndex].getPhysicalPageNumber() != -1) {
                     // If any one of these pages is in use, break out of the loop
                     // and indicate that no space was found to allocate.
                     foundSpace = false;
@@ -110,8 +110,8 @@ public class Kernel implements Device {
                 int inUseIndex = 0;
                 for(int i = processPagesInUseIndex; i < processPagesInUseIndex + pagesToAdd; i++) {
                     while(inUseIndex < pagesInUse.length) {
-                        if(runningProcessPages[i] == -1) {
-                            runningProcessPages[i] = inUseIndex; // Map physical to virtual.
+                        if(runningProcessPages[i].getPhysicalPageNumber() == -1) {
+                            runningProcessPages[i].setPhysicalPageNumber(inUseIndex); // Map physical to virtual.
                             pagesInUse[inUseIndex] = true;
                             inUseIndex++;
                             break;
@@ -136,7 +136,7 @@ public class Kernel implements Device {
         int pagePointer = pointer/1024;
         int pagesToRemove = size/1024;
         runningProcess = scheduler.getRunningProcess();
-        int[] runningProcessPages = runningProcess.getPhysicalPages();
+        VirtualToPhysicalMapping[] runningProcessPages = runningProcess.getPhysicalPages();
 
         System.out.println("pagesInUse before freeing:    " + Arrays.toString(pagesInUse)
                 + "\nphysicalPages before freeing: " + Arrays.toString(runningProcessPages));
@@ -149,8 +149,8 @@ public class Kernel implements Device {
             for(int i = 0; i < runningProcessPages.length; i++) {
                 // This for loop removes the mapping from the process's pages by finding
                 // any spots in the runningProcessPages that are the same as the inUseIndex
-                if(runningProcessPages[i] == inUseIndex) {
-                    runningProcessPages[i] = -1;
+                if(runningProcessPages[i] != null && runningProcessPages[i].getPhysicalPageNumber() == inUseIndex) {
+                    runningProcessPages[i] = null;
                     break;
                 }
             }
