@@ -5,12 +5,19 @@ public class Kernel implements Device {
     private VirtualFileSystem VFS;
     private KernelandProcess runningProcess;
     private boolean[] pagesInUse;
+    private int pageNumber;
 
     public Kernel() {
         scheduler = new Scheduler();
         VFS = new VirtualFileSystem();
         runningProcess = null;
-        pagesInUse = new boolean[1024]; // 1024 (number of pages) or 1048576 (memory's size), idk.
+        pagesInUse = new boolean[1024]; // 1024 (number of pages).
+        pageNumber = 0;
+    }
+
+    public void startup(UserlandProcess init, Priority.Level level) {
+        VFS.Open("file swapfile.txt");
+        createProcess(init, level);
     }
 
     public void sleep(int milliseconds) {
@@ -98,7 +105,7 @@ public class Kernel implements Device {
         for(int processPagesInUseIndex = 0; processPagesInUseIndex < runningProcessPages.length; processPagesInUseIndex++) {
             // Looks through current segment in the runningProcess's pages to see if gap is wide enough to allocate.
             for(int i = processPagesInUseIndex; i < processPagesInUseIndex + pagesToAdd; i++) {
-                if(runningProcessPages[processPagesInUseIndex].getPhysicalPageNumber() != -1) {
+                if(runningProcessPages[processPagesInUseIndex] != null) {
                     // If any one of these pages is in use, break out of the loop
                     // and indicate that no space was found to allocate.
                     foundSpace = false;
@@ -110,11 +117,9 @@ public class Kernel implements Device {
                 int inUseIndex = 0;
                 for(int i = processPagesInUseIndex; i < processPagesInUseIndex + pagesToAdd; i++) {
                     while(inUseIndex < pagesInUse.length) {
-                        if(runningProcessPages[i].getPhysicalPageNumber() == -1) {
-                            runningProcessPages[i].setPhysicalPageNumber(inUseIndex); // Map physical to virtual.
+                        if(runningProcessPages[i] == null) {
+                            runningProcessPages[i] = new VirtualToPhysicalMapping();
                             pagesInUse[inUseIndex] = true;
-                            inUseIndex++;
-                            break;
                         }
                         inUseIndex++;
                     }
@@ -143,15 +148,17 @@ public class Kernel implements Device {
 
         for(int inUseIndex = pagePointer; inUseIndex < pagePointer + pagesToRemove; inUseIndex++) {
             if(!pagesInUse[inUseIndex]) {
-                throw new Exception("Couldn't free memory since it's already free.");
+                throw new Exception("Couldn't free memory since page is not in use.");
             }
             pagesInUse[inUseIndex] = false; // Mark the virtual page as no longer in use.
             for(int i = 0; i < runningProcessPages.length; i++) {
                 // This for loop removes the mapping from the process's pages by finding
                 // any spots in the runningProcessPages that are the same as the inUseIndex
-                if(runningProcessPages[i] != null && runningProcessPages[i].getPhysicalPageNumber() == inUseIndex) {
+                if(runningProcessPages[i] == null || runningProcessPages[i].getPhysicalPageNumber() != -1) {
+                    throw new Exception("Couldn't free memory since process page is null or physical page is -1.");
+                }
+                if(runningProcessPages[i].getPhysicalPageNumber() == inUseIndex) {
                     runningProcessPages[i] = null;
-                    break;
                 }
             }
         }

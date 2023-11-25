@@ -65,6 +65,15 @@ public class KernelandProcess {
         }
     }
 
+    public int getInUsePhysicalPage() {
+        for(int i = 0; i < 100; i++) {
+            if(physicalPages[i].getPhysicalPageNumber() != -1) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     // Check if the process needs to be demoted. processTimeoutCount is incremented,
     // then if it's 5, demote the process, and reset the count.
     public void checkProcessDemotion() {

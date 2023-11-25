@@ -4,7 +4,7 @@ public class OS {
     public static void startup(UserlandProcess init, Priority.Level level) {
         if(kernelInstance == null) {
             kernelInstance = new Kernel();
-            kernelInstance.createProcess(init, level);
+            kernelInstance.startup(init, level);
             createProcess(new IAmTheWorld());
             createProcess(new GoodbyeWorld(), Priority.Level.Background);
             createProcess(new MemoryTesting());

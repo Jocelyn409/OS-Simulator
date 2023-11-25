@@ -195,8 +195,12 @@ public class Scheduler {
     public synchronized void getMapping(int virtualPageNumber) throws Exception {
         KernelandProcess tempRunningProcess = runningProcess;
         int physicalPage;
-        if((physicalPage = tempRunningProcess.getPhysicalPages()[virtualPageNumber].getPhysicalPageNumber()) == -1) {
-            throw new Exception("Segmentation Fault");
+        VirtualToPhysicalMapping pages[] = tempRunningProcess.getPhysicalPages();
+        if((physicalPage = pages[virtualPageNumber].getPhysicalPageNumber()) == -1) {
+            physicalPage = pages[tempRunningProcess.getInUsePhysicalPage()].getPhysicalPageNumber();
+            if(physicalPage == -1) { // ??????
+                getRandomProcess();
+            }
         }
 
         Random random = new Random();
@@ -206,7 +210,10 @@ public class Scheduler {
     }
 
     public KernelandProcess getRandomProcess() {
-        
+        // (in loop) get random process.
+        // find a page in the process w/physical memory.
+        // if there are none, pick another process (restart loop. repeat until found.)
+        // write the victim page to disk.
     }
 
     // Stop running process if there is one; add it to the end of the LL
