@@ -26,7 +26,7 @@ public class KernelandProcess {
         processName = up.getClass().getSimpleName();
         messageQueue = new LinkedList<>();
         physicalPages = new VirtualToPhysicalMapping[100];
-        Arrays.fill(physicalPages, -1);
+        Arrays.fill(physicalPages, new VirtualToPhysicalMapping());
     }
 
     // Suspend thread only if thread has already started.

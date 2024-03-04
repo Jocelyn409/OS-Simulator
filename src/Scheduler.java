@@ -1,12 +1,5 @@
 import java.time.Clock;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.Random;
-import java.util.Collections;
-import java.util.ArrayList;
-import java.util.Map;
+import java.util.*;
 
 public class Scheduler {
     private List<List<KernelandProcess>> processListsArray;
@@ -21,6 +14,7 @@ public class Scheduler {
     private TimerTask timerTask;
     private Clock clock;
     private Random random;
+    private int pageNumber;
 
     public Scheduler() {
         processListsArray = Collections.synchronizedList(new ArrayList<>());
@@ -36,6 +30,7 @@ public class Scheduler {
         timer.schedule(timerTask, 250, 250);
         clock = Clock.systemUTC();
         random = new Random();
+        pageNumber = 0;
     }
 
     private class Interrupt extends TimerTask {
@@ -194,26 +189,89 @@ public class Scheduler {
 
     public synchronized void getMapping(int virtualPageNumber) throws Exception {
         KernelandProcess tempRunningProcess = runningProcess;
-        int physicalPage;
-        VirtualToPhysicalMapping pages[] = tempRunningProcess.getPhysicalPages();
-        if((physicalPage = pages[virtualPageNumber].getPhysicalPageNumber()) == -1) {
-            physicalPage = pages[tempRunningProcess.getInUsePhysicalPage()].getPhysicalPageNumber();
-            if(physicalPage == -1) { // ??????
-                getRandomProcess();
+        VirtualToPhysicalMapping[] runningProcessPages = tempRunningProcess.getPhysicalPages();
+        int physicalPageNumber;
+        int notInUsePhysicalPage;
+
+        KernelandProcess randomProcess;
+        VirtualToPhysicalMapping[] randomProcessPages;
+        int diskPageNumber;
+        int randomProcessInUsePageIndex;
+
+        // If physicalPageNumber is -1, no in use physical page was found.
+        if((physicalPageNumber = runningProcessPages[virtualPageNumber].getPhysicalPageNumber()) == -1) {
+            if((notInUsePhysicalPage = OS.findNotInUsePage()) != -1) {
+                OS.setInUsePage(notInUsePhysicalPage);
+            }
+            else {
+                // Page swap begins since no physical page in array was found.
+                randomProcess = getRandomProcess();
+                randomProcessPages = randomProcess.getPhysicalPages();
+                randomProcessInUsePageIndex = randomProcess.getInUsePhysicalPage();
+                diskPageNumber = randomProcess.getPhysicalPages()[randomProcessInUsePageIndex].getDiskPageNumber();
+
+                if(diskPageNumber == -1) {
+                    randomProcessPages[randomProcessInUsePageIndex].setDiskPageNumber(pageNumber);
+                    pageNumber++;
+                }
+                int virtualAddress = virtualPageNumber * 1024;
+                int pageOffset = virtualAddress % 1024;
+                int rowNumber = -1;
+                int flag = 2;
+                while(flag > 0) {
+                    if(UserlandProcess.translationLookasideBuffer[0][0] == virtualPageNumber) {
+                        rowNumber = 0;
+                    }
+                    else if(UserlandProcess.translationLookasideBuffer[1][0] == virtualPageNumber) {
+                        rowNumber = 1;
+                    }
+                    if(rowNumber != -1) {
+                        int physicalAddress = UserlandProcess.translationLookasideBuffer[rowNumber][1] * 1024 + pageOffset;
+                        byte[] victimPage = new byte[] { UserlandProcess.memory[physicalAddress] };
+                        OS.Write(OS.getSwapFile(), victimPage); // Write victim page to disk.
+                    }
+                    flag--;
+                }
+
+                // Set runningProcess's physical page to victim page value.
+                runningProcessPages[tempRunningProcess.getInUsePhysicalPage()]
+                        .setPhysicalPageNumber(
+                                randomProcessPages[randomProcessInUsePageIndex].getPhysicalPageNumber());
+
+                randomProcessPages[randomProcessInUsePageIndex].setPhysicalPageNumber(-1); // Set victim's physical page to -1.
+                randomProcess.setPhysicalPages(randomProcessPages); // Set physical pages of randomProcess.
+            }
+            runningProcess.setPhysicalPages(runningProcessPages); // Set physical pages of runningProcess.
+        }
+        else {
+            if(runningProcessPages[virtualPageNumber].getDiskPageNumber() != -1) {
+                // Load old data in.
+                runningProcessPages[virtualPageNumber].setPhysicalPageNumber(OS.Read(OS.getSwapFile(), virtualPageNumber)[0]);
+            }
+            else {
+                Arrays.fill(UserlandProcess.memory, (byte)0);
             }
         }
 
         Random random = new Random();
         int randomInt = random.nextInt(2);
         UserlandProcess.translationLookasideBuffer[randomInt][0] = virtualPageNumber;
-        UserlandProcess.translationLookasideBuffer[randomInt][1] = physicalPage;
+        UserlandProcess.translationLookasideBuffer[randomInt][1] = physicalPageNumber;
     }
 
     public KernelandProcess getRandomProcess() {
-        // (in loop) get random process.
-        // find a page in the process w/physical memory.
-        // if there are none, pick another process (restart loop. repeat until found.)
-        // write the victim page to disk.
+        int numberOfProcesses = messageTargets.size();
+        KernelandProcess randomProcess;
+        int randomProcessInUsePageIndex;
+        Random random = new Random();
+
+        while(true) {
+            randomProcess = messageTargets.get(random.nextInt(numberOfProcesses));
+            randomProcessInUsePageIndex = randomProcess.getInUsePhysicalPage();
+            if(randomProcessInUsePageIndex != -1) {
+                return randomProcess;
+            }
+        }
     }
 
     // Stop running process if there is one; add it to the end of the LL

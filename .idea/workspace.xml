@@ -5,15 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="25881d44-c1a1-424a-907f-c4c6a345470a" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OS Simulator/OS.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OS Simulator/OS.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OS Simulator/UserlandProcess.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OS Simulator/UserlandProcess.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Kernel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Kernel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/MemoryTesting.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MemoryTesting.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/MemoryTesting2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MemoryTesting2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/KernelandProcess.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/KernelandProcess.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/OS.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/OS.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Scheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Scheduler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/UserlandProcess.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/UserlandProcess.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -159,6 +156,10 @@
       <workItem from="1699681046541" duration="1210000" />
       <workItem from="1699839488594" duration="10717000" />
       <workItem from="1699859297648" duration="6906000" />
+      <workItem from="1700875172748" duration="8227000" />
+      <workItem from="1700979366860" duration="8564000" />
+      <workItem from="1701050360766" duration="8680000" />
+      <workItem from="1701060113465" duration="91000" />
     </task>
     <servers />
   </component>

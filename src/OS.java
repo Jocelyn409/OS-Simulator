@@ -77,6 +77,18 @@ public class OS {
         kernelInstance.getMapping(virtualPageNumber);
     }
 
+    public static int findNotInUsePage() {
+        return kernelInstance.findNotInUsePage();
+    }
+
+    public static void setInUsePage(int input) {
+        kernelInstance.setInUsePage(input);
+    }
+
+    public static int getSwapFile() {
+        return kernelInstance.getSwapFile();
+    }
+
     public static int allocateMemory(int size) {
         if(size % 1024 != 0) {
             return -1;

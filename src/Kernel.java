@@ -5,6 +5,7 @@ public class Kernel implements Device {
     private VirtualFileSystem VFS;
     private KernelandProcess runningProcess;
     private boolean[] pagesInUse;
+    private int swapFile;
     private int pageNumber;
 
     public Kernel() {
@@ -12,11 +13,10 @@ public class Kernel implements Device {
         VFS = new VirtualFileSystem();
         runningProcess = null;
         pagesInUse = new boolean[1024]; // 1024 (number of pages).
-        pageNumber = 0;
     }
 
     public void startup(UserlandProcess init, Priority.Level level) {
-        VFS.Open("file swapfile.txt");
+        swapFile = VFS.Open("file swapfile.txt");
         createProcess(init, level);
     }
 
@@ -96,7 +96,24 @@ public class Kernel implements Device {
         scheduler.getMapping(virtualPageNumber);
     }
 
-    public int allocateMemory(int size) {
+    public int getSwapFile() {
+        return swapFile;
+    }
+
+    public int findNotInUsePage() {
+        for(int i = 0; i < 1024; i++) {
+            if(!pagesInUse[i]) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public void setInUsePage(int input) {
+        pagesInUse[input] = true;
+    }
+
+     public int allocateMemory(int size) {
         int pagesToAdd = size/1024;
         boolean foundSpace = true;
         runningProcess = scheduler.getRunningProcess();
@@ -154,7 +171,7 @@ public class Kernel implements Device {
             for(int i = 0; i < runningProcessPages.length; i++) {
                 // This for loop removes the mapping from the process's pages by finding
                 // any spots in the runningProcessPages that are the same as the inUseIndex
-                if(runningProcessPages[i] == null || runningProcessPages[i].getPhysicalPageNumber() != -1) {
+                if(runningProcessPages[i] == null || runningProcessPages[i].getPhysicalPageNumber() == -1) {
                     throw new Exception("Couldn't free memory since process page is null or physical page is -1.");
                 }
                 if(runningProcessPages[i].getPhysicalPageNumber() == inUseIndex) {
