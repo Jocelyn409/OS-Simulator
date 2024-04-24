@@ -1,6 +1,6 @@
 
 *.class
 *.xml
-.idea/workspace.xml
+.idea
 *.trc
 *.dmp
